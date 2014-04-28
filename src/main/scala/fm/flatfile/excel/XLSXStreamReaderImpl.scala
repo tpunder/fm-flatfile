@@ -18,27 +18,37 @@ package fm.flatfile.excel
 import java.io.InputStream
 import java.lang.Double
 import org.apache.poi.xssf.eventusermodel.XSSFReader
-import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.openxml4j.opc.{OPCPackage, PackageAccess}
 import org.apache.poi.xssf.model.StylesTable
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable
 import scala.util.Try
-import fm.common.{Logging, SingleUseResource}
+import fm.common.{Logging, Resource, SingleUseResource}
 import fm.lazyseq.LazySeq
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
 
+// TODO: Support reading a File which according to OPCPackage.open is more efficient than reading from an InputStream
 final class XLSXStreamReaderImpl(is: InputStream, options: FlatFileReaderOptions) extends LazySeq[Try[FlatFileParsedRow]] with Logging {
   def foreach[U](f: Try[FlatFileParsedRow] => U): Unit = {
-    val xlsxPackage: OPCPackage = OPCPackage.open(is)
-    val stringsTable: ReadOnlySharedStringsTable = new ReadOnlySharedStringsTable(xlsxPackage)
-    val xssfReader: XSSFReader = new XSSFReader(xlsxPackage)
-    val stylesTable: StylesTable = xssfReader.getStylesTable()
-
-    val sheetsData: java.util.Iterator[InputStream] = xssfReader.getSheetsData
-    require(sheetsData.hasNext, "XLSX File Must have at least one sheet")
+    val xlsxPackage: OPCPackage = OPCPackage.open(is/*, PackageAccess.READ*/)
     
-    SingleUseResource(xssfReader.getSheetsData().next).use { sheetInputStream: InputStream =>
-      val processor = new XLSXStreamProcessor(options, stylesTable, stringsTable)
-      processor.processSheet(sheetInputStream, f)
+    try {
+      val stringsTable: ReadOnlySharedStringsTable = new ReadOnlySharedStringsTable(xlsxPackage)
+      val xssfReader: XSSFReader = new XSSFReader(xlsxPackage)
+      val stylesTable: StylesTable = xssfReader.getStylesTable()
+  
+      val sheetsData: java.util.Iterator[InputStream] = xssfReader.getSheetsData
+      require(sheetsData.hasNext, "XLSX File Must have at least one sheet")
+      
+      SingleUseResource(sheetsData.next).use { sheetInputStream: InputStream =>
+        val processor = new XLSXStreamProcessor(options, stylesTable, stringsTable)
+        processor.processSheet(sheetInputStream, f)
+      }
+    } finally {
+      // Since we are using an InputStream the OPCPackage is opened in READ_WRITE mode.
+      xlsxPackage.close()
+      
+      // Have to call revert() instead of close() since  this should be read only
+      //xlsxPackage.revert()
     }
   }
 }
