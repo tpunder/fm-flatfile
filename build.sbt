@@ -2,7 +2,7 @@ name := "fm-flatfile"
 
 organization := "com.frugalmechanic"
 
-version := "0.1"
+version := "0.2-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
