@@ -274,12 +274,12 @@ bar,789
   
   test("FlatFileReaderRowParser - Header match check - Fail - Spelling") {
     val reader = makeFlatFileReader(csvExample, FlatFileReaderOptions(headers = Some(Vector("name","price","quantity"))))
-    evaluating { checkCSVExample(reader) } should produce [FlatFileReaderException.MissingHeaders]
+    an [FlatFileReaderException.MissingHeaders] should be thrownBy { checkCSVExample(reader) }
   }
   
   test("FlatFileReaderRowParser - Header match check - Fail - Order") {
     val reader = makeFlatFileReader(csvExample, FlatFileReaderOptions(headers = Some(Vector("qty","name","price"))))
-    evaluating { checkCSVExample(reader) } should produce [FlatFileReaderException.MissingHeaders]
+    an [FlatFileReaderException.MissingHeaders] should be thrownBy { checkCSVExample(reader) }
   }
   
   test("csvExample - LineNumbers") {
@@ -324,17 +324,17 @@ bar,789
   
   test("Header Detection - ALL - FAIL") {
     val reader = makeFlatFileReader(headerDetectionCSVExample, FlatFileReaderOptions(headerDetection = FlatFileReaderOptions.AutoDetectAllHeaders(Seq("name", "price", "qty", "asd"))))
-    evaluating { checkCSVExample(reader) } should produce [FlatFileReaderException.MissingHeaders]
+    an [FlatFileReaderException.MissingHeaders] should be thrownBy { checkCSVExample(reader) }
   }
   
   test("Header Detection - ANY - FAIL") {
     val reader = makeFlatFileReader(headerDetectionCSVExample, FlatFileReaderOptions(headerDetection = FlatFileReaderOptions.AutoDetectAnyHeaders(Seq("blahblah", "doesnotexist", "anotherdoesnotexist"))))
-    evaluating { checkCSVExample(reader) } should produce [FlatFileReaderException.MissingHeaders]
+    an [FlatFileReaderException.MissingHeaders] should be thrownBy { checkCSVExample(reader) }
   }
   
   test("Header Detection - CUSTOM - FAIL") {
     val reader = makeFlatFileReader(headerDetectionCSVExample, FlatFileReaderOptions(headerDetection = FlatFileReaderOptions.CustomHeaderDetection{ _.contains("blahblah") }))
-    evaluating { checkCSVExample(reader) } should produce [FlatFileReaderException.MissingHeaders]
+    an [FlatFileReaderException.MissingHeaders] should be thrownBy { checkCSVExample(reader) }
   }
   
   val headerTransformCSVExample = """
@@ -378,13 +378,14 @@ bar,789,3, ewq
    
   test("Duplicate Headers - Reading Field - qty") {
     val reader = makeFlatFileReader(csvExampleWithDuplicateHeaders, FlatFileReaderOptions.default)
-    evaluating{ reader.toIndexedSeq.map{ _("qty") } } should produce [FlatFileReaderException.DuplicateHeaders]
-    evaluating{ reader.toIndexedSeq.map{ _("QTY") } } should produce [FlatFileReaderException.DuplicateHeaders]
+    
+    an [FlatFileReaderException.DuplicateHeaders] should be thrownBy { reader.toIndexedSeq.map{ _("qty") } }
+    an [FlatFileReaderException.DuplicateHeaders] should be thrownBy { reader.toIndexedSeq.map{ _("QTY") } }
   }
     
   test("Duplicate Headers - Reading Field - NaMe") {
     val reader = makeFlatFileReader(csvExampleWithDuplicateHeaders, FlatFileReaderOptions.default)
-    evaluating{ reader.toIndexedSeq.map{ _("NaMe") } } should produce [FlatFileReaderException.DuplicateHeaders]
+    an [FlatFileReaderException.DuplicateHeaders] should be thrownBy { reader.toIndexedSeq.map{ _("NaMe") } }
   }
   
   test("Duplicate Headers - Reading Field - name") {
@@ -413,11 +414,11 @@ bar,789,3, ewq
 
     reader.head.headers should equal(Vector("name","price","qty"))
     
-    evaluating { reader.toVector.map{ _.values } } should produce [FlatFileReaderException.ColumnCountMismatch]
+    an [FlatFileReaderException.ColumnCountMismatch] should be thrownBy { reader.toVector.map{ _.values } }
     
     reader.withTries.map{ _.isSuccess }.toVector should equal (Vector(true, false))
     
-    evaluating { reader.withTries.toVector(1).get } should produce [FlatFileReaderException.ColumnCountMismatch]
+    an [FlatFileReaderException.ColumnCountMismatch] should be thrownBy { reader.withTries.toVector(1).get }
     
 //    reader.next.values should equal(Vector("foo","123","1"))
 //    evaluating { reader.next.values } should produce [AssertionError]
