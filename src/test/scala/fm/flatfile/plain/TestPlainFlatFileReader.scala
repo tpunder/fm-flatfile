@@ -212,8 +212,8 @@ final class TestPlainFlatFileReader extends FunSuite with Matchers {
 
 //  test("parseRow control characters") {
 //    checkParseRow(csvParser, "one,two,three\r", Vector("one","two","three"))
-//    checkParseRow(csvParser, "\0one,t\0wo,th\0ree\r", Vector("one","two","three"))
-//    checkParseRow(csvParser, "\0one,two,three\r\nfoo", Vector("one","two","three"))
+//    checkParseRow(csvParser, "\u0000one,t\u0000wo,th\u0000ree\r", Vector("one","two","three"))
+//    checkParseRow(csvParser, "\u0000one,two,three\r\nfoo", Vector("one","two","three"))
 //  }
 
   test("autoDetectSepAndQuote") {
@@ -399,7 +399,7 @@ bar,789,3, ewq
   }
   
   test("FlatFileReaderRowParser - control chars") {
-    val reader = makeFlatFileReader("na\rme, pr\0ice ,qty\nfo\0o ,123\0,1\nbar,789", FlatFileReaderOptions())
+    val reader = makeFlatFileReader("na\rme, pr\u0000ice ,qty\nfo\u0000o ,123\u0000,1\nbar,789", FlatFileReaderOptions())
 
     reader.head.headers should equal(Vector("name","price","qty"))
     
