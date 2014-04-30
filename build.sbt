@@ -2,7 +2,7 @@ name := "fm-flatfile"
 
 organization := "com.frugalmechanic"
 
-version := "0.2-SNAPSHOT"
+version := "0.2.0-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
@@ -15,7 +15,7 @@ scalaVersion := "2.10.4"
 // Note: Use "++ 2.11.0" to select a specific version when building
 crossScalaVersions := Seq("2.10.4", "2.11.0")
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-optimise")
+scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-optimise", "-Yinline-warnings")
 
 resolvers ++= Seq(
   "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
