@@ -1,26 +1,16 @@
-name := "fm-flatfile"
+FMPublic
 
-organization := "com.frugalmechanic"
+name := "fm-flatfile"
 
 version := "0.2.0-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
-licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-
-homepage := Some(url("https://github.com/frugalmechanic/fm-flatfile"))
-
 scalaVersion := "2.10.4"
 
-// Note: Use "++ 2.11.0" to select a specific version when building
 crossScalaVersions := Seq("2.10.4", "2.11.0")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-optimise", "-Yinline-warnings")
-
-resolvers ++= Seq(
-  "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
-  "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases/"
-)
 
 libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "fm-common" % "0.1",
@@ -56,41 +46,3 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.3" % "test"
-
-publishMavenStyle := true
-
-publishTo <<= version { (v: String) =>
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) 
-    Some("snapshots" at nexus + "content/repositories/snapshots") 
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
-publishArtifact in Test := false
-
-pomIncludeRepository := { _ => false }
-
-pomExtra := (
-  <developers>
-    <developer>
-      <id>tim</id>
-      <name>Tim Underwood</name>
-      <email>tim@frugalmechanic.com</email>
-      <organization>Frugal Mechanic</organization>
-      <organizationUrl>http://frugalmechanic.com</organizationUrl>
-    </developer>
-    <developer>
-      <id>eric</id>
-      <name>Eric Peters</name>
-      <email>eric@frugalmechanic.com</email>
-      <organization>Frugal Mechanic</organization>
-      <organizationUrl>http://frugalmechanic.com</organizationUrl>
-    </developer>
-  </developers>
-  <scm>
-      <connection>scm:git:git@github.com:frugalmechanic/fm-flatfile.git</connection>
-      <developerConnection>scm:git:git@github.com:frugalmechanic/fm-flatfile.git</developerConnection>
-      <url>git@github.com:frugalmechanic/fm-flatfile.git</url>
-  </scm>)
-

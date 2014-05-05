@@ -1,13 +1,4 @@
-import com.typesafe.sbt.SbtProguard._
-import com.typesafe.sbt.SbtProguard.ProguardKeys.proguard
-
-// Modeled after https://github.com/rtimush/sbt-updates/blob/master/proguard.sbt
-
-proguardSettings
-
-javaOptions in (Proguard, proguard) := Seq("-Xmx1024M", "-Dfile.encoding=UTF8")
-
-ProguardKeys.proguardVersion in Proguard := "4.11"
+FMProguardSettings
 
 ProguardKeys.options in Proguard ++= Seq(
   "-dontoptimize",
@@ -87,17 +78,3 @@ ProguardKeys.options in Proguard ++= Seq(
 )
 
 ProguardKeys.defaultInputFilter in Proguard := Some("!META-INF/**,!javax/**,!org/xml/sax/**,!org/w3c/dom/**,!license/**,!LICENSE.txt,!NOTICE.txt,!font_metrics.properties,!**.xsd,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/index.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/stylesheet5d8bdoctype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctstylesheet4257type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctnumfmtsb58btype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctnumfmt3870type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/stnumfmtid76fbtype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/stxstring1198type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctfonts6623type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctfont14d8type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctfills2c6ftype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctfill550ctype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctborders0d66type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctborderf935type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctcellxfs1322type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctxf97f7type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctcellstylexfsa81ftype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctdxfsb26atype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/themefd26doctype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/workbookec17doctype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctworkbook83c3type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctsheets49fdtype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctsheet4dbetype.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/strelationshipid1e94type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/ctrsta472type.xsb,schemaorg_apache_xmlbeans/system/sE130CAA0A01A7CDE5A2B4FEB8B311707/stcellstylexfid70c7type.xsb,!**.xsb")
-
-ProguardKeys.inputs in Proguard <<= (dependencyClasspath in Embedded, packageBin in Runtime) map {
-  (dcp, pb) => Seq(pb) ++ dcp.files
-}
-
-Build.publishMinJar <<= (ProguardKeys.proguard in Proguard) map (_.head)
-
-packagedArtifact in (Compile, packageBin) <<= (packagedArtifact in (Compile, packageBin), Build.publishMinJar) map {
-  case ((art, _), jar) => (art, jar)
-}
-
-dependencyClasspath in Compile <++= dependencyClasspath in Embedded
-
-dependencyClasspath in Test <++= dependencyClasspath in Embedded
