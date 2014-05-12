@@ -38,11 +38,15 @@ libraryDependencies ++= Seq(
 // a custom class loader that automatically prepends the fm/flatfile/thirdparty
 // part when loading resources or classes for the Excel support.
 //
+// Update - Getting some runtime errors when using Proguard so I'm
+//          disabling it for now until I can come up with a better
+//          solution.
+//
 libraryDependencies ++= Seq(
-  "org.apache.poi" % "poi" % "3.10-FINAL" % "embedded",
-  "org.apache.poi" % "poi-ooxml" % "3.10-FINAL" % "embedded",
-  "org.apache.poi" % "poi-ooxml-schemas" % "3.10-FINAL" % "embedded",
-  "org.codehaus.woodstox" % "woodstox-core-asl" % "4.3.0" % "embedded"
+  "org.apache.poi" % "poi" % "3.10-FINAL",
+  "org.apache.poi" % "poi-ooxml" % "3.10-FINAL",
+  "org.apache.poi" % "poi-ooxml-schemas" % "3.10-FINAL",
+  "org.codehaus.woodstox" % "woodstox-core-asl" % "4.3.0"
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.3" % "test"
