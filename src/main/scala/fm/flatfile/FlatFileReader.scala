@@ -16,7 +16,7 @@
 package fm.flatfile
 
 import fm.common.Implicits._
-import fm.common.{InputStreamResource, Resource, SingleUseResource}
+import fm.common.{InputStreamResource, Resource, SingleUseResource, XMLUtil}
 import fm.lazyseq.LazySeq
 import com.frugalmechanic.optparse._
 import scala.util.{Failure, Success, Try}
@@ -47,46 +47,11 @@ object FlatFileReader extends FlatFileReaderFactory {
     def foreach[U](f: Try[FlatFileRow] => U): Unit = resource.buffered().use { is: BufferedInputStream =>
       val impl: FlatFileReaderImpl[_] = 
         if (ExcelFlatFileReader.isExcelFormat(is)) ExcelFlatFileReader
-        else if (isXML(is)) throw new FlatFileReaderException.InvalidFlatFile("Looks like an XML File and NOT a flat file")
+        else if (XMLUtil.isXML(is)) throw new FlatFileReaderException.InvalidFlatFile("Looks like an XML File and NOT a flat file")
         else PlainFlatFileReader
         
       impl.foreach(is, options)(f)
     }
-  }
-  
-  // NOTE: Duplicated in XmlReader
-  private def isXML(f: File): Boolean = InputStreamResource.forFile(f).buffered().use{ isXML }
-  
-  // NOTE: Duplicated in XmlReader
-  private def isXML(is: InputStream): Boolean = {
-    import javax.xml.stream.XMLInputFactory
-    import javax.xml.stream.XMLStreamConstants.{START_ELEMENT, CHARACTERS}
-    import com.ctc.wstx.stax.WstxInputFactory
-    import org.codehaus.stax2.XMLStreamReader2
-
-    require(is.markSupported, "Need an InputStream that supports mark()/reset()")
-    is.mark(1024)
-    
-    val inputFactory = new WstxInputFactory()
-    inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
-    inputFactory.configureForSpeed()
-
-    var xmlStreamReader: XMLStreamReader2 = null
-    
-    val res: Boolean = try {
-      xmlStreamReader = inputFactory.createXMLStreamReader(is).asInstanceOf[XMLStreamReader2]
-      while(xmlStreamReader.getEventType != START_ELEMENT) xmlStreamReader.next()
-      // If we found a START_ELEMENT then this looks like XML
-      xmlStreamReader.getEventType == START_ELEMENT
-    } catch {
-      case ex: Exception => false
-    } finally {
-      xmlStreamReader.close()
-    }
-    
-    is.reset()
-
-    res
   }
   
   def parseExcelDate(dateStr: String): LocalDate = ExcelFlatFileReader.parseExcelDate(dateStr)
