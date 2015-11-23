@@ -6,9 +6,9 @@ version := "0.3.0-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.10.4", "2.11.5")
+crossScalaVersions := Seq("2.10.6", "2.11.7")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-Xlint", "-optimise", "-Yinline-warnings")
 
@@ -20,8 +20,8 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "joda-time" % "joda-time" % "2.3",
-  "org.joda" % "joda-convert" % "1.5"
+  "joda-time" % "joda-time" % "2.7",
+  "org.joda" % "joda-convert" % "1.7"
 )
 
 // These dependencies are for Excel reading support.
@@ -44,10 +44,10 @@ libraryDependencies ++= Seq(
 //          solution.
 //
 libraryDependencies ++= Seq(
-  "org.apache.poi" % "poi" % "3.10-FINAL",
-  "org.apache.poi" % "poi-ooxml" % "3.10-FINAL",
-  "org.apache.poi" % "poi-ooxml-schemas" % "3.10-FINAL",
-  "org.codehaus.woodstox" % "woodstox-core-asl" % "4.3.0"
+  "org.apache.poi" % "poi" % "3.12",
+  "org.apache.poi" % "poi-ooxml" % "3.12",
+  "org.apache.poi" % "poi-ooxml-schemas" % "3.12",
+  "org.codehaus.woodstox" % "woodstox-core-asl" % "4.4.1"
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.3" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
