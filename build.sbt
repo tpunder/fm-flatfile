@@ -2,7 +2,7 @@ FMPublic
 
 name := "fm-flatfile"
 
-version := "0.3.0-SNAPSHOT"
+version := "0.3.0"
 
 description := "TSV/CSV/FlatFile Reader"
 
