@@ -13,9 +13,9 @@ crossScalaVersions := Seq("2.10.6", "2.11.7")
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-Xlint", "-optimise", "-Yinline-warnings")
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.2.0",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.2.0",
-  "com.frugalmechanic" %% "fm-xml" % "0.1.0",
+  "com.frugalmechanic" %% "fm-common" % "0.3.0",
+  "com.frugalmechanic" %% "fm-lazyseq" % "0.3.0",
+  "com.frugalmechanic" %% "fm-xml" % "0.2.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.1"
 )
 
@@ -43,10 +43,13 @@ libraryDependencies ++= Seq(
 //          disabling it for now until I can come up with a better
 //          solution.
 //
+
+val ApachePOIVersion = "3.13"
+
 libraryDependencies ++= Seq(
-  "org.apache.poi" % "poi" % "3.12",
-  "org.apache.poi" % "poi-ooxml" % "3.12",
-  "org.apache.poi" % "poi-ooxml-schemas" % "3.12",
+  "org.apache.poi" % "poi" % ApachePOIVersion,
+  "org.apache.poi" % "poi-ooxml" % ApachePOIVersion,
+  "org.apache.poi" % "poi-ooxml-schemas" % ApachePOIVersion,
   "org.codehaus.woodstox" % "woodstox-core-asl" % "4.4.1"
 )
 
