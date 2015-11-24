@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "fm-common" % "0.3.0",
   "com.frugalmechanic" %% "fm-lazyseq" % "0.3.0",
   "com.frugalmechanic" %% "fm-xml" % "0.2.0",
-  "com.frugalmechanic" %% "scala-optparse" % "1.1.1"
+  "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
 )
 
 libraryDependencies ++= Seq(
