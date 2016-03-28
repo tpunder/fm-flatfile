@@ -119,7 +119,7 @@ final case class FlatFileRowHeaders(headers: IndexedSeq[String]) {
     
     val idx: Int = rawColIndexForKey(key)
     
-    if(useCache) columnNameToIndexCache.putIfAbsent(key, idx)
+    if (useCache) columnNameToIndexCache.putIfAbsent(key, idx)
       
     idx
   }
