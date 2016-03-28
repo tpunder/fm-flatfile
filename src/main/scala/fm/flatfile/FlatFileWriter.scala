@@ -46,9 +46,11 @@ final class FlatFileWriter(writer: Writer, options: FlatFileWriterOptions) {
     
   def writeHeaders(): Unit = {
     require(!headersWritten, "Headers have already been written!")
-    require(options.writeHeaders, "Headers are disabled")
-    if (options.headers.isDefined) writeRow(options.headers.get)
-    headersWritten = true
+    
+    if (options.writeHeaders && options.headers.isDefined) {
+      writeRow(options.headers.get)
+      headersWritten = true
+    }
   }
   
   def write(kvPairs: (String, String)*): Unit = {
