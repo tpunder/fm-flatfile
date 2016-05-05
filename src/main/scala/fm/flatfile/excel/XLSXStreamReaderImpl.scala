@@ -26,7 +26,7 @@ import fm.common.{Logging, Resource, SingleUseResource}
 import fm.lazyseq.LazySeq
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
 
-// TODO: Support reading a File which according to OPCPackage.open is more efficient than reading from an InputStream
+// TODO: Support reading a File which according to OPCPackage.open() is more efficient than reading from an InputStream
 final class XLSXStreamReaderImpl(is: InputStream, options: FlatFileReaderOptions) extends LazySeq[Try[FlatFileParsedRow]] with Logging {
   def foreach[U](f: Try[FlatFileParsedRow] => U): Unit = {
     val xlsxPackage: OPCPackage = OPCPackage.open(is/*, PackageAccess.READ*/)
@@ -36,12 +36,21 @@ final class XLSXStreamReaderImpl(is: InputStream, options: FlatFileReaderOptions
       val xssfReader: XSSFReader = new XSSFReader(xlsxPackage)
       val stylesTable: StylesTable = xssfReader.getStylesTable()
   
-      val sheetsData: java.util.Iterator[InputStream] = xssfReader.getSheetsData
+      val sheetsData: XSSFReader.SheetIterator = xssfReader.getSheetsData.asInstanceOf[XSSFReader.SheetIterator]
       require(sheetsData.hasNext, "XLSX File Must have at least one sheet")
       
-      SingleUseResource(sheetsData.next).use { sheetInputStream: InputStream =>
-        val processor = new XLSXStreamProcessor(options, stylesTable, stringsTable)
-        processor.processSheet(sheetInputStream, f)
+      var done: Boolean = false
+      
+      while (sheetsData.hasNext && !done) {
+        SingleUseResource(sheetsData.next).use { sheetInputStream: InputStream =>
+          val sheetName: String = sheetsData.getSheetName
+          
+          if (null == options.sheetName || sheetName.equalsIgnoreCase(options.sheetName)) {
+            val processor: XLSXStreamProcessor = new XLSXStreamProcessor(options, stylesTable, stringsTable)
+            processor.processSheet(sheetInputStream, f)
+            done = true
+          }
+        }
       }
     } finally {
       // Since we are using an InputStream the OPCPackage is opened in READ_WRITE mode.

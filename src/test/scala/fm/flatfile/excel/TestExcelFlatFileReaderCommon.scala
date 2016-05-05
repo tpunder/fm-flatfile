@@ -15,11 +15,11 @@
  */
 package fm.flatfile.excel
 
+import fm.common.InputStreamResource
+import fm.flatfile.{FlatFileReaderFactory, FlatFileReaderOptions, FlatFileRow}
 import java.io.{BufferedInputStream, File}
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
-import fm.flatfile.{FlatFileReaderFactory, FlatFileReaderOptions, FlatFileRow}
-import fm.common.InputStreamResource
 
 abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory, file: String) extends FunSuite with Matchers {
 
@@ -45,7 +45,9 @@ abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory,
   }
   
   test("Headers") {
-    flatFileRows().forall{ _.headers == TestExcelFlatFileReader.headers } should equal(true)
+    flatFileRows().foreach{ row: FlatFileRow =>
+      row.headers should equal (TestExcelFlatFileReader.headers)
+    }
   }
 
   test("Values") {
@@ -58,14 +60,25 @@ abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory,
     }
   }
   
-  test("Header Options - First Row") {
-    flatFileRows().forall{ _.headers == TestExcelFlatFileReader.headers } should equal(true)
+  test("Header Options - 'test_data' sheetName") {
+    val options = FlatFileReaderOptions(sheetName = "test_data")
+    flatFileRows(options).map{ _.values }.toIndexedSeq should equal (TestExcelFlatFileReader.values)
+  }
+  
+  test("Header Options - 'should_not_extract' sheetName with no headers") {
+    val options = FlatFileReaderOptions(hasHeaders = false, sheetName = "SHOULD_not_ExTrAcT")
+    flatFileRows(options).map{ _.values }.toIndexedSeq should equal (TestExcelFlatFileReader.shouldNotExtractValues)
+  }
+  
+  test("Header Options - 'sheet3' sheetName with no headers") {
+    val options = FlatFileReaderOptions(hasHeaders = false, sheetName = "shEet3")
+    flatFileRows(options).map{ _.values }.toIndexedSeq should equal (Vector.empty)
   }
 
   test("Header Options - Specify Row") {
     val headers: IndexedSeq[String] = TestExcelFlatFileReader.values(1) // 0 Based + 1 for Header
     val options = FlatFileReaderOptions(skipLines = 2)
-    flatFileRows(options).forall{ _.headers == headers } should equal(true)
+    flatFileRows(options).foreach{ row: FlatFileRow => row.headers should equal (headers) }
   }
 
   test("Header Options - AutoDetect Row - ALL") {

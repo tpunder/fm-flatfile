@@ -81,7 +81,11 @@ final case class FlatFileReaderOptions(
   quote: FlatFileReaderOptions.QuoteOption = FlatFileReaderOptions.AutoDetectQuote,
   characterEncoding: String = null,
   comment: String = null,  // Lines at the beginning of the file that begin with this string will be treated as a comment
-  plainLineReaderTransform: LazySeq[LineWithNumber] => LazySeq[LineWithNumber] = reader => reader  // Allows you to apply arbitrary transforms to the Line Reader.  This is run BEFORE anything else is applied (e.g. skip lines)
+  plainLineReaderTransform: LazySeq[LineWithNumber] => LazySeq[LineWithNumber] = reader => reader,  // Allows you to apply arbitrary transforms to the Line Reader.  This is run BEFORE anything else is applied (e.g. skip lines)
+  //
+  // ExcelFlatFileReader Specific Options:
+  //
+  sheetName: String = null
 ) {
   if (!hasHeaders) require(headerDetection == FlatFileReaderOptions.NormalHeaderDetection, "If hasHeaders is false then headerDetection must be NormalHeaderDetection since no other options make sense!")
 }
