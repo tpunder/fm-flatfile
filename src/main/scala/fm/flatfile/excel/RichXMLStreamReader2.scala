@@ -89,7 +89,7 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
     if (sr.getEventType == START_ELEMENT) sr.skipElement()
     
-    var done = false
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
@@ -142,7 +142,7 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
     // If we are at a START_ELEMENT then skip the element to get to the next sibling
     if (sr.getEventType == START_ELEMENT) sr.skipElement()
     
-    var done = false
+    var done: Boolean = false
     
     while(!done && sr.hasNext) {
       val tpe: Int = sr.next()
@@ -161,7 +161,7 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
   def readElementText(): String = {
     sr.require(START_ELEMENT, null, null)
     
-    var done = false
+    var done: Boolean = false
     var text: String = ""
     
     while (!done && sr.hasNext()) {
@@ -185,7 +185,7 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
     if (trySeekToChildElement(name)) {
       val text: String = readElementText()
       seekToEndOfParentElement()
-      Some(text)  
+      Some(text)
     } else None
   }
   
@@ -202,8 +202,8 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
    * Returns the depth that the element was found at
    */
   def seekToAnyMatching(name: String): Int = {
-    var depth = 0
-    var done = false
+    var depth: Int = 0
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()
@@ -229,9 +229,9 @@ private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* ext
     
     val pathParts: Array[String] = path.split('/')
     
-    val startingDepth = sr.getDepth()
+    val startingDepth: Int = sr.getDepth()
    
-    var done = false
+    var done: Boolean = false
     
     while (!done && sr.hasNext) {
       val tpe: Int = sr.next()

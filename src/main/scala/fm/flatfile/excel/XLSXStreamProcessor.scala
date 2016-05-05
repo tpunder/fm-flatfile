@@ -44,7 +44,7 @@ private[excel] final class XLSXStreamProcessor(options: FlatFileReaderOptions, s
     import org.codehaus.stax2.XMLStreamReader2
     import javax.xml.stream.XMLInputFactory
     
-    val inputFactory = new WstxInputFactory()
+    val inputFactory: WstxInputFactory = new WstxInputFactory()
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
     inputFactory.configureForSpeed()
     

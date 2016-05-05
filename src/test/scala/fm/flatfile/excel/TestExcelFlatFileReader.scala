@@ -20,7 +20,7 @@ import fm.flatfile.FlatFileReader
 object TestExcelFlatFileReader {
   val headers: IndexedSeq[String] = Vector("text_header", "formatted_header", "boolean_header", "date_header", "time_header", "datetime_header", "number_header", "double_header", "formula_header", "error_header", "sharedstrings_header", "accountingformat_no_symbol_header", "accountingformat_symbol_header")
 
-  val values = IndexedSeq(
+  val values: IndexedSeq[IndexedSeq[String]] = Vector(
     Vector("text_value1", "formatted_value1", "TRUE", "8/7/12", "5:01:01 AM", "8/7/12 5:01", "1", "1.10", "11.1whee", "#DIV/0!", "sharedstrings_value", "4.79", "$4.79"),
     Vector("", "formatted_value2", "FALSE", "8/8/12", "5:02:02 AM", "8/8/12 5:02", "2", "2.20", "22.2whee", "#DIV/0!", "sharedstrings_value", "5.79", "$5.79"),
     Vector("text_value3", "formatted_value3", "TRUE", "8/9/12", "5:03:03 AM", "8/9/12 5:03", "3", "3.30", "33.3whee", "#DIV/0!", "", "6.79", "$6.79"),
@@ -30,7 +30,7 @@ object TestExcelFlatFileReader {
   )
   
   // These are the line numbers that correspond to the values
-  val lineNumbers = IndexedSeq(2, 3, 4, 5, 6, 8)
+  val lineNumbers: IndexedSeq[Int] = Vector(2, 3, 4, 5, 6, 8)
 }
 
 // These should auto-detect the type of Excel file
