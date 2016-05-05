@@ -8,8 +8,6 @@ description := "TSV/CSV/FlatFile Reader"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8")
-
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-Xlint", "-optimise", "-Yinline-warnings")
 
 libraryDependencies ++= Seq(
@@ -44,13 +42,13 @@ libraryDependencies ++= Seq(
 //          solution.
 //
 
-val ApachePOIVersion = "3.13"
+val ApachePOIVersion = "3.14"
 
 libraryDependencies ++= Seq(
   "org.apache.poi" % "poi" % ApachePOIVersion,
   "org.apache.poi" % "poi-ooxml" % ApachePOIVersion,
   "org.apache.poi" % "poi-ooxml-schemas" % ApachePOIVersion,
-  "org.codehaus.woodstox" % "woodstox-core-asl" % "4.4.1"
+  "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2"
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
