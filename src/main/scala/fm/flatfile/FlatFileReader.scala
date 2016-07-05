@@ -16,7 +16,7 @@
 package fm.flatfile
 
 import fm.common.Implicits._
-import fm.common.{InputStreamResource, Resource, SingleUseResource, XMLUtil}
+import fm.common.{FileOutputStreamResource, InputStreamResource, Resource, SingleUseResource, XMLUtil}
 import fm.lazyseq.LazySeq
 import com.frugalmechanic.optparse._
 import scala.util.{Failure, Success, Try}
@@ -55,7 +55,6 @@ object FlatFileReader extends FlatFileReaderFactory {
   }
   
   def parseExcelDate(dateStr: String): LocalDate = ExcelFlatFileReader.parseExcelDate(dateStr)
-  
 
   //
   // Main Method and Options
@@ -65,6 +64,8 @@ object FlatFileReader extends FlatFileReaderFactory {
     val skipLines = IntOpt()
     val debug = BoolOpt()
     val head = IntOpt(desc = "Only take N numbers of rows from the file")
+    val out = FileOpt(desc = "Write the outputs out to a file")
+    val format = StrOpt(desc = "Valid export formats: 'tsv' or 'csv'", validWith=out)
   }
 
   def main(args: Array[String]) {
@@ -76,24 +77,43 @@ object FlatFileReader extends FlatFileReaderFactory {
     require(file.isFile && file.canRead, "File does not exist or is not readable: "+file.getPath)
 
     val options: FlatFileReaderOptions = new FlatFileReaderOptions(skipLines=skipLines)
-
     val reader: FlatFileReader = apply(file, options)
 
     var first = true
-    
     var tmp: LazySeq[FlatFileRow] = reader
-    
     if (Options.head) tmp = tmp.take(Options.head.get)
-    
-    tmp.foreach{ row: FlatFileRow =>
+
+    optionallyOutput(tmp){ row: FlatFileRow =>
       if (first) {
         println(row.headers.mkString(", "))
         first = false
       }
-      if (Options.debug) row.debugPrint() else println(row.lineNumber+": "+row.values.mkString(", "))
+      if (Options.debug) row.debugPrint() //else println(row.lineNumber+": "+row.values.mkString(", "))
     }
   }
 
+  // Helper for def main(...) for doing file output/conversion
+  private def optionallyOutput(reader: LazySeq[FlatFileRow])(f: FlatFileRow => Unit): Unit = {
+    if (Options.out) {
+      val format: FlatFileWriterOptions = if (Options.format) {
+        Options.format() match {
+          case "tsv" => FlatFileWriterOptions.TSV
+          case "csv" => FlatFileWriterOptions.CSV
+          case _ => throw new Exception("Invalid format")
+        }
+      } else FlatFileWriterOptions.TSV
+
+      println(s"Reading From: ${Options.file()}, Writing to: ${Options.out()}")
+      FlatFileWriter(FileOutputStreamResource(Options.out()), options=format) { out: FlatFileWriter =>
+        reader.onFirst{ row: FlatFileRow => out.writeRow(row.headers) }.foreach { row: FlatFileRow =>
+          out.writeRow(row.values)
+          f(row)
+        }
+      }
+    } else {
+      reader.foreach{ f }
+    }
+  }
 }
 
 abstract class FlatFileReader extends LazySeq[FlatFileRow] {
