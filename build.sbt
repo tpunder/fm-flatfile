@@ -11,7 +11,7 @@ scalaVersion := "2.11.8"
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-Xlint", "-optimise", "-Yinline-warnings")
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.4.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-common" % "0.6.0-SNAPSHOT",
   "com.frugalmechanic" %% "fm-lazyseq" % "0.4.0-SNAPSHOT",
   "com.frugalmechanic" %% "fm-xml" % "0.3.0-SNAPSHOT",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
