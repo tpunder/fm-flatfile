@@ -2,18 +2,30 @@ FMPublic
 
 name := "fm-flatfile"
 
-version := "0.5.0-SNAPSHOT"
+version := "0.6.0-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-language:implicitConversions", "-feature", "-Xlint", "-optimise", "-Yinline-warnings")
+crossScalaVersions := Seq("2.11.8", "2.12.1")
+
+scalacOptions := Seq(
+  "-unchecked",
+  "-deprecation",
+  "-language:implicitConversions",
+  "-feature",
+  "-Xlint",
+  "-Ywarn-unused-import"
+) ++ (if (scalaVersion.value.startsWith("2.12")) Seq(
+  // Scala 2.12 specific compiler flags
+  "-opt:l:classpath"
+) else Nil)
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.7.0-SNAPSHOT",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.5.0-SNAPSHOT",
-  "com.frugalmechanic" %% "fm-xml" % "0.4.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-common" % "0.8.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-lazyseq" % "0.6.0-SNAPSHOT",
+  "com.frugalmechanic" %% "fm-xml" % "0.5.0-SNAPSHOT",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
 )
 
