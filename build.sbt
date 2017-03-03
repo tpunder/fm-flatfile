@@ -19,7 +19,7 @@ scalacOptions := Seq(
   "-Ywarn-unused-import"
 ) ++ (if (scalaVersion.value.startsWith("2.12")) Seq(
   // Scala 2.12 specific compiler flags
-  "-opt:l:classpath"
+  "-opt:l:project"
 ) else Nil)
 
 libraryDependencies ++= Seq(
