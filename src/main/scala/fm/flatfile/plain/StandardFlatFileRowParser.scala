@@ -15,7 +15,7 @@
  */
 package fm.flatfile.plain
 
-import fm.flatfile.{FlatFileReaderOptions, FlatFileRow}
+import fm.flatfile.{FlatFileReaderOptions}
 import fm.common.{Logging, StacklessException}
 import fm.common.Implicits._
 import java.util.regex.Pattern

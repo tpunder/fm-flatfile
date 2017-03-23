@@ -16,7 +16,7 @@
 package fm.flatfile.plain
 
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderImpl, FlatFileReaderOptions}
-import fm.common.{FileUtil, InputStreamResource, IOUtils}
+import fm.common.IOUtils
 import fm.common.Implicits._
 import fm.lazyseq.LazySeq
 import scala.util.Try

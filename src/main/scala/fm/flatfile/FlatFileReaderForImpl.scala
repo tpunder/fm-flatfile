@@ -16,8 +16,7 @@
 package fm.flatfile
 
 import fm.common.Resource
-import scala.util.{Failure, Success, Try}
-import java.io.{InputStream, Reader}
+import scala.util.Try
 
 /**
  * This creates an instance of a FlatFileReader for a given implementation

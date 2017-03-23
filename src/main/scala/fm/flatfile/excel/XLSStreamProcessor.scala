@@ -17,14 +17,10 @@ package fm.flatfile.excel
 
 import java.io.InputStream
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
-import fm.common.Implicits._
-import fm.common.{Logging, Resource}
-import fm.lazyseq.LazySeq
-
+import fm.common.Logging
 import org.apache.poi.hssf.eventusermodel._
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener
 import org.apache.poi.hssf.eventusermodel.dummyrecord._
-import org.apache.poi.hssf.model._
 import org.apache.poi.ss.formula.eval.ErrorEval
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.hssf.usermodel.HSSFWorkbook

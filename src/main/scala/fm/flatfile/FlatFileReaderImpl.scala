@@ -15,11 +15,10 @@
  */
 package fm.flatfile
 
-import fm.common.Implicits._
 import fm.common.{InputStreamResource, Normalize, Resource}
 import fm.lazyseq.LazySeq
 import scala.util.{Failure, Success, Try}
-import java.io.{File, InputStream}
+import java.io.InputStream
 
 /**
  * This is what you extends to implement a new FlatFileReader type

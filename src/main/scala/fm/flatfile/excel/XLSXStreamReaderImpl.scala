@@ -16,13 +16,12 @@
 package fm.flatfile.excel
 
 import java.io.InputStream
-import java.lang.Double
 import org.apache.poi.xssf.eventusermodel.XSSFReader
-import org.apache.poi.openxml4j.opc.{OPCPackage, PackageAccess}
+import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.xssf.model.StylesTable
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable
 import scala.util.Try
-import fm.common.{Logging, Resource, SingleUseResource}
+import fm.common.{Logging, SingleUseResource}
 import fm.lazyseq.LazySeq
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
 

@@ -15,7 +15,7 @@
  */
 package fm.flatfile.excel
 
-import java.io.{Closeable, InputStream}
+import java.io.InputStream
 import java.lang.Double
 import org.apache.poi.ss.usermodel.{BuiltinFormats, DataFormatter}
 import org.apache.poi.xssf.model.StylesTable
@@ -23,7 +23,6 @@ import org.apache.poi.xssf.usermodel.{XSSFCellStyle, XSSFRichTextString}
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable
 import scala.util.Try
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
-import fm.common.Implicits._
 import fm.common.Logging
 
 private[excel] final class XLSXStreamProcessor(options: FlatFileReaderOptions, stylesTable: StylesTable, stringsTable: ReadOnlySharedStringsTable) extends Logging {
@@ -47,10 +46,7 @@ private[excel] final class XLSXStreamProcessor(options: FlatFileReaderOptions, s
     val inputFactory: WstxInputFactory = new WstxInputFactory()
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
     inputFactory.configureForSpeed()
-    
-    import fm.common.Resource
-    import Resource.toCloseable
-    
+
     val sr: XMLStreamReader2 = inputFactory.createXMLStreamReader(sheetInputStream).asInstanceOf[XMLStreamReader2]
     
     // Not using Resource.using to avoid Proguard complaining about XMLStreamReader2

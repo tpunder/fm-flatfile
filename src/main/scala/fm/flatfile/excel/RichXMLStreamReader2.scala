@@ -18,7 +18,7 @@ package fm.flatfile.excel
 import org.codehaus.stax2.XMLStreamReader2
 import javax.xml.stream.XMLStreamConstants._
 import javax.xml.stream.XMLStreamException
-import scala.annotation.{tailrec, switch}
+import scala.annotation.switch
 
 private[excel] final class RichXMLStreamReader2(val sr: XMLStreamReader2) /* extends AnyVal */ {
   /**
