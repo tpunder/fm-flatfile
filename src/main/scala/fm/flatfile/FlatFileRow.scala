@@ -117,12 +117,18 @@ final case class FlatFileRow(values: IndexedSeq[String], rawRowCharSequence: Cha
     
     null
   }
-  
-  // Original:
-  //def getNonBlank(fields: String*): Option[String] = fields.findMapped { get(_).filter(_.isNotBlank) }
-  
-  // This is faster than the original
+
+  /**
+   * Get the first non-blank value from any of the passed in fields
+   */
   final def getNonBlank(fields: String*): Option[String] = Option(getNonBlankOrNull(fields: _*))
+
+  /**
+   * Get the first non-blank value from any of the passed in fields or throw a NoSuchElementException
+   */
+  final def nonBlank(fields: String*): String = {
+    getNonBlank(fields:_*) getOrElse { throw new NoSuchElementException("No non-blank value found for column(s): "+fields.mkString(",")) }
+  }
 
   final def getInt(fields: String*): Option[Int] = getBigDecimal(fields: _*).map{_.intValue()}
 
