@@ -197,7 +197,7 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
 
           try {
             // Parse with quotes
-            var tmpIdx: Int = parseQuotedColumnValue(row, idx, columnValueBuffer)
+            val tmpIdx: Int = parseQuotedColumnValue(row, idx, columnValueBuffer)
             
             // Negative value means we need another line of data
             if (tmpIdx < 0) {

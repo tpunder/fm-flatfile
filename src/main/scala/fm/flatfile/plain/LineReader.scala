@@ -25,7 +25,7 @@ final class LineReader(reader: Reader) extends LazySeq[JavaStringBuilder] {
   def foreach[U](f: JavaStringBuilder => U): Unit = {
     var sb = new JavaStringBuilder
     
-    var buf: Array[Char] = new Array(BufferSize)
+    val buf: Array[Char] = new Array(BufferSize)
     var bufSize: Int = -1
         
     do {

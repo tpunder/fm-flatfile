@@ -19,11 +19,9 @@ import java.io.InputStream
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderOptions}
 import fm.common.Logging
 import org.apache.poi.hssf.eventusermodel._
-import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener
 import org.apache.poi.hssf.eventusermodel.dummyrecord._
 import org.apache.poi.ss.formula.eval.ErrorEval
 import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.hssf.record._
 import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import org.apache.poi.hssf.usermodel.HSSFDataFormat
@@ -38,8 +36,8 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
   private[this] var lastColumnNumber: Int = 0
 
   // For parsing Formulas
-  private[this] var workbookBuildingListener: SheetRecordCollectingListener = _
-  private[this] var stubWorkbook: HSSFWorkbook = null
+  //private[this] var workbookBuildingListener: SheetRecordCollectingListener = _
+  //private[this] var stubWorkbook: HSSFWorkbook = null
 
   // Records we pick up as we process
   private[this] var sstRecord: SSTRecord = null
@@ -61,7 +59,7 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
   private[this] var outputNextStringRecord: Boolean = _
   
   private[this] var rowBuilder = Vector.newBuilder[String]
-  private[this] var minColumns: Int = 0 // based upon xssfHeaders.size - ensure any column that has a header has at least a blank value
+  //private[this] var minColumns: Int = 0 // based upon xssfHeaders.size - ensure any column that has a header has at least a blank value
 
   private def formatBoolean(bool: Boolean): String = {
     bool match {
