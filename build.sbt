@@ -6,9 +6,9 @@ version := "0.7.0-SNAPSHOT"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.2"
 
-crossScalaVersions := Seq("2.11.8", "2.12.1")
+crossScalaVersions := Seq("2.11.8", "2.12.2")
 
 scalacOptions := Seq(
   "-unchecked",
