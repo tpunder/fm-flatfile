@@ -21,7 +21,7 @@ import fm.lazyseq.LazySeq
 import com.frugalmechanic.optparse._
 import scala.util.Try
 import java.io.{BufferedInputStream, File, Reader}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 object FlatFileReader extends FlatFileReaderFactory {
   import fm.flatfile.plain.PlainFlatFileReader

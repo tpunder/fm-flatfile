@@ -32,6 +32,9 @@ final class TestExcelFlatFileReaderDateParsing extends FunSuite with Matchers {
     check("08-01-2011")
     
     check("Monday, August 1, 2011")
+    check("Mon, August 1, 2011")
+    check("Mon, Aug 1, 2011")
+    check("Mon, August 1, 2011")
     
     check("1-Aug-11")
     check("01-Aug-11")

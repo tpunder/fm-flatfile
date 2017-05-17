@@ -29,11 +29,6 @@ libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
 )
 
-libraryDependencies ++= Seq(
-  "joda-time" % "joda-time" % "2.9.1",
-  "org.joda" % "joda-convert" % "1.8" // Required by joda-time when using Scala
-)
-
 // These dependencies are for Excel reading support.
 //
 // Proguard support is kind of working.  I'm able to strip out
