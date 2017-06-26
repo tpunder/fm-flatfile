@@ -2,8 +2,6 @@ FMPublic
 
 name := "fm-flatfile"
 
-version := "0.8.0-SNAPSHOT"
-
 description := "TSV/CSV/FlatFile Reader"
 
 scalaVersion := "2.12.2"
