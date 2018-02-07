@@ -39,18 +39,18 @@ object StandardFlatFileRowParser extends Logging {
     // Some(quote) - An explicit quote was specified OR we auto-detected a quote
     val quote: String = detectedQuote.getOrElse(StandardFlatFileRowParser.DefaultQuote)
     
-    // Strict Quote Escaping means that un-escape quotes in the middle of a quoted column
+    // Strict Quote Escaping means that un-escaped quotes in the middle of a quoted column
     // will trigger us to re-parse the column as an unquoted value.  e.g.:
     // "Foo" Bar"
     // With strictQuoteEscaping enabled will parse as:  "Foo" Bar"
     // And with strictQuoteEscaping disabled will parse as: Foo" Bar
     //
-    // This allows us to correct stuff like:
+    // This allows us to correctly parse stuff like:
     // "Super Cool" Product
     // Which looks like it's a quoted column but really isn't.
     val strictQuoteEscaping: Boolean = detectedQuote.isDefined
     
-    val parser = new StandardFlatFileRowParser(sep=sep, quote=quote, comment=options.comment, strictQuoteEscaping=strictQuoteEscaping)
+    val parser: StandardFlatFileRowParser = new StandardFlatFileRowParser(sep=sep, quote=quote, comment=options.comment, strictQuoteEscaping=strictQuoteEscaping)
 
     logger.info("Using sep: "+parser.sep.replace("\t","\\t")+"  quote: "+parser.quote)
 
@@ -73,7 +73,7 @@ object StandardFlatFileRowParser extends Logging {
   def autoDetectSepAndQuote(row: CharSequence, comment: String, sep: String, quote: FlatFileReaderOptions.QuoteOption): (String,Option[String]) = {
     
     // Check if there is anything to auto detect
-    if(null != sep && "" != sep) quote match {
+    if (null != sep && "" != sep) quote match {
       case FlatFileReaderOptions.AutoDetectQuote  => 
       case FlatFileReaderOptions.NoQuote          => return (sep, Some(""))
       case FlatFileReaderOptions.ExplicitQuote(q) => return (sep, Some(q))
@@ -81,7 +81,7 @@ object StandardFlatFileRowParser extends Logging {
 
     val matcher = autoDetectPattern(sep, quote).matcher(row)
 
-    if(!matcher.matches) {
+    if (!matcher.matches) {
       throw new Exception("Unable to auto detect sep and quote for line: "+row)
     }
 
@@ -97,7 +97,7 @@ object StandardFlatFileRowParser extends Logging {
 
     val detectedSep: String = matcher.group(2)
     // Can't use .isNotBlank because a tab counts as being blank (all whitespace)
-    if(null != sep && "" != sep) require(sep == detectedSep, "Expected explicit seperator and detected seperator to match!  Explicit: '"+sep+"'  Detected: '"+detectedSep+"'")
+    if (null != sep && "" != sep) require(sep == detectedSep, "Expected explicit seperator and detected seperator to match!  Explicit: '"+sep+"'  Detected: '"+detectedSep+"'")
 
     require(!detectedSep.startsWith(" ") && !detectedSep.endsWith(" "), "Sep starts or ends with spaces: \""+detectedSep+"\"")
     require(!detectedQuote.exists{ _ == detectedSep }, "Sep and Quote are the same?!: '"+detectedSep+"'")
@@ -121,10 +121,10 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
   private case class ResumeInfo(columnValues: Builder[String, Vector[String]], idx: Int, tmpIdx: Int, columnValueBuffer: StringBuilder)
 
   final def parseRow(row: CharSequence): IndexedSeq[String] = {
-    if(0 == row.length) return Vector.empty
+    if (0 == row.length) return Vector.empty
 
     // If this is a comment line return an empty record
-    if(comment.isNotBlank && row.nextCharsMatch(comment, 0)) return Vector.empty
+    if (comment.isNotBlank && row.nextCharsMatch(comment, 0)) return Vector.empty
     
     parseRowImpl(row)
   }
@@ -183,8 +183,8 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
     //
     // Normal Parsing Logic
     //
-    while(idx < row.length) {
-      if(Character.isWhitespace(row.charAt(idx)) && !row.nextCharsMatch(sep, idx) && !row.nextCharsMatch(quote, idx)) {
+    while (idx < row.length) {
+      if (Character.isWhitespace(row.charAt(idx)) && !row.nextCharsMatch(sep, idx) && !row.nextCharsMatch(quote, idx)) {
         // Skip over any whitespace (unless it's our sep!!!) but add it to the buffer in case we are parsing a non-quoted
         // column since in that case we want the space
         columnValueBuffer += row.charAt(idx)
@@ -221,14 +221,14 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
       }
     }
 
-    if(row.nextCharsMatch(sep, row.length-sep.length)) columnValues += "" // Add a blank record if the last character is a separator
+    if (row.nextCharsMatch(sep, row.length-sep.length)) columnValues += "" // Add a blank record if the last character is a separator
     columnValues.result
   }
 
 
   /**
    * Parse a quoted value for a column
-   * @param buffer The source buffer to read data from
+   * @param readBuffer The source buffer to read data from
    * @param idx The index to start at
    * @param result Where to store the resulting column value
    * @return The index we left off on
@@ -245,7 +245,7 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
     
     var i: Int = idx
 
-    while(i < readBuffer.length) {
+    while (i < readBuffer.length) {
       if(readBuffer.nextCharsMatch(escapedQuote, i)) {
         // We found an escaped quote, add 1 copy of it
         result ++= quote
@@ -253,14 +253,14 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
       /* START HACK */
       /* START HACK */
       /* START HACK */
-      } else if(readBuffer.nextCharsMatch(slashEscapedQuote, i)) {
+      } else if (readBuffer.nextCharsMatch(slashEscapedQuote, i)) {
         // We found an escaped quote, add 1 copy of it
         result ++= quote
         i += slashEscapedQuote.length
       /* END HACK */
       /* END HACK */
       /* END HACK */
-      } else if(readBuffer.nextCharsMatch(quote, i)) {
+      } else if (readBuffer.nextCharsMatch(quote, i)) {
         // This is either the end of the column or a non-escaped quote in the middle of the column
 
         // If this is the end of the column then we would expect the quote to be followed
@@ -268,12 +268,12 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
         var tmpI: Int = i + quote.length
 
         // Skip over any whitespace after the quote (ignoring our sep/quote since they could be considered whitespace: e.g. \t)
-        while(tmpI < readBuffer.length && Character.isWhitespace(readBuffer.charAt(tmpI)) && !readBuffer.nextCharsMatch(quote, tmpI) && !readBuffer.nextCharsMatch(sep, tmpI)) {
+        while (tmpI < readBuffer.length && Character.isWhitespace(readBuffer.charAt(tmpI)) && !readBuffer.nextCharsMatch(quote, tmpI) && !readBuffer.nextCharsMatch(sep, tmpI)) {
           tmpI += 1
         }
 
         // If we are past the end of the buffer or we found a sep then that's the end of the field
-        if(tmpI >= readBuffer.length || readBuffer.nextCharsMatch(sep, tmpI)) {
+        if (tmpI >= readBuffer.length || readBuffer.nextCharsMatch(sep, tmpI)) {
           return tmpI + sep.length
         } else {
           // Otherwise we found an improperly escaped quote in the middle of the column.  If we are using
@@ -294,7 +294,7 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
 
   /**
    * Parse a non-quoted value for a column
-   * @param buffer The source buffer to read data from
+   * @param readBuffer The source buffer to read data from
    * @param idx The index to start at
    * @param result Where to store the resulting column value
    * @return The index we left off on
@@ -303,8 +303,8 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
     assert(idx >= 0, s"Negative idx: $idx")
     
     var i: Int = idx
-    while(i < readBuffer.length) {
-      if(readBuffer.nextCharsMatch(sep, i)) return i+sep.length
+    while (i < readBuffer.length) {
+      if (readBuffer.nextCharsMatch(sep, i)) return i+sep.length
       result += readBuffer.charAt(i)
       i += 1
     }
