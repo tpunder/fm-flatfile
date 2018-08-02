@@ -48,7 +48,7 @@ libraryDependencies ++= Seq(
 //          solution.
 //
 
-val ApachePOIVersion = "3.14"
+val ApachePOIVersion = "3.17"
 
 libraryDependencies ++= Seq(
   "org.apache.poi" % "poi" % ApachePOIVersion,

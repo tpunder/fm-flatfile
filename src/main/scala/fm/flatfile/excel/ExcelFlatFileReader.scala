@@ -23,8 +23,7 @@ import java.io.{BufferedInputStream, File, InputStream}
 import java.time.{LocalDate, YearMonth}
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import scala.util.Try
-import org.apache.poi.poifs.filesystem.POIFSFileSystem
-import org.apache.poi.POIXMLDocument
+import org.apache.poi.poifs.filesystem.FileMagic
 
 object ExcelFlatFileReader extends ExcelFlatFileReader {
   // java.lang.String doesn't trim "no break space" - 160
@@ -37,12 +36,12 @@ object ExcelFlatFileReader extends ExcelFlatFileReader {
   def isXLSXFormat(f: File): Boolean = InputStreamResource.forFileOrResource(f).buffered().use{ isXLSXFormat }
   
   def isExcelFormat(is: BufferedInputStream): Boolean = isXLSFormat(is) || isXLSXFormat(is)
-  def isXLSFormat(is: BufferedInputStream): Boolean = POIFSFileSystem.hasPOIFSHeader(is)
-  def isXLSXFormat(is: BufferedInputStream): Boolean = POIXMLDocument.hasOOXMLHeader(is)
+  def isXLSFormat(is: BufferedInputStream): Boolean = FileMagic.valueOf(is) === FileMagic.OLE2
+  def isXLSXFormat(is: BufferedInputStream): Boolean = FileMagic.valueOf(is) === FileMagic.OOXML
   
   def makeLineReader(in: InputStream, options: FlatFileReaderOptions): LazySeq[Try[FlatFileParsedRow]] = {
     val bis: BufferedInputStream = in.toBufferedInputStream
-    
+
     if (isXLSFormat(bis)) new XLSStreamReaderImpl(bis, options)
     else if (isXLSXFormat(bis)) new XLSXStreamReaderImpl(bis, options)
     else throw ExcelFlatFileReaderException.InvalidExcelFile("Unable to Detect Excel File Type")
