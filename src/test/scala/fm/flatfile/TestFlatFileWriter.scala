@@ -15,25 +15,33 @@
  */
 package fm.flatfile
 
+import fm.common.OutputStreamResource
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
-import java.io.StringWriter
+import java.io.{ByteArrayOutputStream, StringWriter}
+import java.nio.charset.{Charset, StandardCharsets}
 
 final class TestFlatFileWriter extends FunSuite with Matchers {
-  val default = FlatFileWriterOptions()
-  val csv = FlatFileWriterOptions(sep = ",")
-  val tsv = FlatFileWriterOptions(sep = "\t")
-  
+  private val default = FlatFileWriterOptions.default
+  private val csv = FlatFileWriterOptions(sep = ",")
+  private val tsv = FlatFileWriterOptions(sep = "\t")
+
+  private val multiByteString: String = "oneByte: \u0024 twoByte: \u00A2 threeByte: \u20AC fourByteSupplementary: \uD83D\uDCA5"
+
   test("Basic Row Writing") {
     Seq(default, csv).foreach { options =>
       checkRow(options, Seq("foo"), "foo")
       checkRow(options, Seq("foo","bar"), "foo,bar")
       checkRow(options, Seq("foo","bar","baz"), "foo,bar,baz")
+      checkRow(options, Seq(multiByteString), multiByteString)
+      checkRow(options, Seq("foo", multiByteString, "bar"), s"foo,$multiByteString,bar")
     }
     
     checkRow(tsv, Seq("foo"), "foo")
     checkRow(tsv, Seq("foo","bar"), "foo\tbar")
     checkRow(tsv, Seq("foo","bar","baz"), "foo\tbar\tbaz")
+    checkRow(tsv, Seq(multiByteString), multiByteString)
+    checkRow(tsv, Seq("foo", multiByteString, "bar"), s"foo\t$multiByteString\tbar")
   }
   
   test("Quoting/Escaping") {
@@ -46,58 +54,82 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
     checkRow(csv, Seq("foo","b\"ar","b\naz"), "foo,\"b\"\"ar\",\"b\naz\"")
     checkRow(tsv, Seq("foo","b\"ar","b\naz"), "foo\t\"b\"\"ar\"\t\"b\naz\"")
   }
-  
-  private def checkMulti(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String) {
+
+  private def checkMultiRow(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String): Unit = {
+    checkMultiRowWriter(options)(f)(expected)
+
+    checkMultiRowOutputStream(options, StandardCharsets.UTF_8)(f)(expected)
+    checkMultiRowOutputStream(options, StandardCharsets.UTF_16)(f)(expected)
+    checkMultiRowOutputStream(options, StandardCharsets.UTF_16BE)(f)(expected)
+    checkMultiRowOutputStream(options, StandardCharsets.UTF_16LE)(f)(expected)
+  }
+
+  private def checkMultiRowWriter(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String) {
     val sw = new StringWriter
-    val ffw = new FlatFileWriter(sw, options)
+    val ffw: FlatFileWriter = new FlatFileWriter(sw, options)
     ffw.writeHeaders()
     f(ffw)
     sw.toString() should equal (expected)
   }
+
+  private def checkMultiRowOutputStream(options: FlatFileWriterOptions, charset: Charset)(f: FlatFileWriter => Unit)(expected: String) {
+    val os: ByteArrayOutputStream = new ByteArrayOutputStream
+    FlatFileWriter(OutputStreamResource.wrap(os), charset, options)(f)
+    //os.toString(charset.name) should equal (expected)
+    os.toString(charset.name) should equal (expected)
+  }
   
   private def checkRow(options: FlatFileWriterOptions, row: Seq[String], expected: String) {
-    checkMulti(options){ _.writeRow(row) }(expected+"\n")
+    checkMultiRow(options){ _.writeRow(row) }(expected+"\n")
   }
   
   test("CSV Multi Row Writes - No Headers") {
-    checkMulti(FlatFileWriterOptions(headers = None, trailingNewline = false)){ writer =>
+    checkMultiRow(FlatFileWriterOptions(headers = None, trailingNewline = false)){ writer =>
       writer.writeRow(Seq("foo"))
       writer.writeRow(Seq("foo","bar"))
       writer.writeRow(Seq("foo","bar","baz"))
+      writer.writeRow(Seq(multiByteString))
       writer.writeRow(Seq("Hello, World","foo "," bar"))
-    }("""
+    }(s"""
 foo
 foo,bar
 foo,bar,baz
+$multiByteString
 "Hello, World",foo , bar
 """.trim)
 
   }
   
   test("CSV Multi Row Writes - No Headers - Trailing Newlines") {
-    checkMulti(FlatFileWriterOptions(headers = None, trailingNewline = true)){ writer =>
+    checkMultiRow(FlatFileWriterOptions(headers = None, trailingNewline = true)){ writer =>
       writer.writeRow(Seq("foo"))
       writer.writeRow(Seq("foo","bar"))
       writer.writeRow(Seq("foo","bar","baz"))
+      writer.writeRow(Seq(multiByteString))
       writer.writeRow(Seq("Hello, World","foo "," bar"))
-    }("""
+    }(s"""
 foo
 foo,bar
 foo,bar,baz
+$multiByteString
 "Hello, World",foo , bar
 """.trim+"\n")
 
   }
   
   test("CSV Multi Row Writes - Headers") {
-    checkMulti(FlatFileWriterOptions(headers = Some(Vector("one","two","three")), trailingNewline = false)){ writer =>
+    checkMultiRow(FlatFileWriterOptions(headers = Some(Vector("one","two","three")), trailingNewline = false)){ writer =>
       writer.write("one" -> "foo")
+      writer.write("one" -> "foo", "two" -> multiByteString)
+      writer.write("one" -> "foo", "three" -> multiByteString)
       writer.write("one" -> "foo", "two" -> "bar")
       writer.write("one" -> "foo", "two" -> "bar", "three" -> "baz")
       writer.write("one" -> "Hello, World", "two" -> "foo ", "three" -> " bar")
-    }("""
+    }(s"""
 one,two,three
 foo,,
+foo,$multiByteString,
+foo,,$multiByteString
 foo,bar,
 foo,bar,baz
 "Hello, World",foo , bar
@@ -106,15 +138,17 @@ foo,bar,baz
   
   test("TSV Multi Row Writes - Headers") {
     val tab = "\t"
-    
-    checkMulti(FlatFileWriterOptions(sep = "\t", headers = Some(Vector("one","two","three")), trailingNewline = false)){ writer =>
+
+    checkMultiRow(FlatFileWriterOptions(sep = "\t", headers = Some(Vector("one","two","three")), trailingNewline = false)){ writer =>
       writer.writeRow(Seq("foo"))
+      writer.writeRow(Seq(multiByteString))
       writer.writeRow(Seq("foo","bar"))
       writer.writeRow(Seq("foo","bar","baz"))
       writer.writeRow(Seq("Hello, World","foo "," bar"))
     }(s"""
 one${tab}two${tab}three
 foo
+$multiByteString
 foo${tab}bar
 foo${tab}bar${tab}baz
 Hello, World${tab}foo ${tab} bar
@@ -129,18 +163,20 @@ Hello, World${tab}foo ${tab} bar
     val rows: Vector[(String, String, String)] = Vector(
       ("foo1","bar1","baz1"),
       ("foo2","bar2","baz2"),
-      ("foo3","bar3","baz3")
+      ("foo3","bar3","baz3"),
+      (multiByteString,multiByteString,multiByteString)
     )
     
     rows.foreach { case (one, two, three) =>
       ffw.write("one" -> one, "two" -> two, "three" -> three)
     }
     
-    sw.toString() should equal("""
+    sw.toString() should equal(s"""
 one,two,three
 foo1,bar1,baz1
 foo2,bar2,baz2
 foo3,bar3,baz3
+$multiByteString,$multiByteString,$multiByteString
 """.trim)
   }
   

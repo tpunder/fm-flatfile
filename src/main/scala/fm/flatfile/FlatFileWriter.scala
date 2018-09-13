@@ -18,10 +18,24 @@ package fm.flatfile
 import fm.common.Implicits._
 import fm.common.OutputStreamResource
 import java.io.Writer
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets.UTF_8
 
 object FlatFileWriter {
-  def apply[T](out: OutputStreamResource, options: FlatFileWriterOptions = FlatFileWriterOptions())(f: FlatFileWriter => T): T = {
-    out.writer.map{ new FlatFileWriter(_, options) }.use{ flatFileWriter: FlatFileWriter =>
+  def apply[T](out: OutputStreamResource)(f: FlatFileWriter => T): T = {
+    apply(out, FlatFileWriterOptions.default)(f)
+  }
+
+  def apply[T](out: OutputStreamResource, options: FlatFileWriterOptions)(f: FlatFileWriter => T): T = {
+    apply(out, UTF_8, options)(f)
+  }
+
+  def apply[T](out: OutputStreamResource, charset: Charset)(f: FlatFileWriter => T): T = {
+    apply(out, UTF_8, FlatFileWriterOptions.default)(f)
+  }
+
+  def apply[T](out: OutputStreamResource, charset: Charset, options: FlatFileWriterOptions)(f: FlatFileWriter => T): T = {
+    out.writer(charset).map{ new FlatFileWriter(_, options) }.use{ flatFileWriter: FlatFileWriter =>
       flatFileWriter.writeHeaders()
       f(flatFileWriter)
     }

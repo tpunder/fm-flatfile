@@ -18,6 +18,8 @@ package fm.flatfile
 object FlatFileWriterOptions {
   val CSV = FlatFileWriterOptions(sep = ",")
   val TSV = FlatFileWriterOptions(sep = "\t")
+
+  val default: FlatFileWriterOptions = FlatFileWriterOptions()
 }
 
 final case class FlatFileWriterOptions(
