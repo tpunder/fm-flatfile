@@ -15,7 +15,7 @@
  */
 package fm.flatfile
 
-import fm.common.OutputStreamResource
+import fm.common.{OutputStreamResource, UTF_8_BOM}
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import java.io.{ByteArrayOutputStream, StringWriter}
@@ -58,6 +58,7 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
   private def checkMultiRow(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String): Unit = {
     checkMultiRowWriter(options)(f)(expected)
 
+    checkMultiRowOutputStream(options, UTF_8_BOM)(f)(expected)
     checkMultiRowOutputStream(options, StandardCharsets.UTF_8)(f)(expected)
     checkMultiRowOutputStream(options, StandardCharsets.UTF_16)(f)(expected)
     checkMultiRowOutputStream(options, StandardCharsets.UTF_16BE)(f)(expected)
@@ -75,8 +76,22 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
   private def checkMultiRowOutputStream(options: FlatFileWriterOptions, charset: Charset)(f: FlatFileWriter => Unit)(expected: String) {
     val os: ByteArrayOutputStream = new ByteArrayOutputStream
     FlatFileWriter(OutputStreamResource.wrap(os), charset, options)(f)
-    //os.toString(charset.name) should equal (expected)
-    os.toString(charset.name) should equal (expected)
+
+    val bytes: Array[Byte] = if (charset eq UTF_8_BOM) {
+      val b: Array[Byte] = os.toByteArray
+
+      // Check for the UTF-8 BOM
+      b(0) should equal (0xEF.toByte)
+      b(1) should equal (0xBB.toByte)
+      b(2) should equal (0xBF.toByte)
+
+      // Strip off the BOM
+      b.drop(3)
+    } else {
+      os.toByteArray
+    }
+
+    new String(bytes, charset) should equal (expected)
   }
   
   private def checkRow(options: FlatFileWriterOptions, row: Seq[String], expected: String) {
