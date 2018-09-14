@@ -22,7 +22,7 @@ scalacOptions := Seq(
 ) else Nil)
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.24.0",
+  "com.frugalmechanic" %% "fm-common" % "0.25.0",
   "com.frugalmechanic" %% "fm-lazyseq" % "0.9.0",
   "com.frugalmechanic" %% "fm-xml" % "0.11.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
