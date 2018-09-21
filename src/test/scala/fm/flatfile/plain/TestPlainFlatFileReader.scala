@@ -18,7 +18,7 @@ package fm.flatfile.plain
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import java.io.StringReader
-import fm.common.MultiUseResource
+import fm.common.{InputStreamResource, MultiUseResource}
 import fm.flatfile.{FlatFileReader, FlatFileReaderException, FlatFileReaderOptions}
 
 final class TestPlainFlatFileReader extends FunSuite with Matchers {
@@ -563,6 +563,18 @@ asd,qwe,zxc
     ))
     
     reader.toVector.map{ _.lineNumber } should equal (Vector(2,4))
+  }
+
+
+  test("Reading a file with a BOM from a file/resource") {
+    val reader = PlainFlatFileReader(InputStreamResource.forFileOrResource(new java.io.File("WithBOM.csv")))
+
+    reader.head.headers should equal(Vector("name","en"))
+
+    reader.toVector.map{ _.values } should equal (Vector(
+      Vector("results","Results"),
+      Vector("total","Total")
+    ))
   }
 
   def checkPlainParse(parser: StandardFlatFileRowParser, restOfLine: String, expected: String, idx: Int = 0) {
