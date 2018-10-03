@@ -4,9 +4,9 @@ name := "fm-flatfile"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
-crossScalaVersions := Seq("2.11.11", "2.12.6")
+crossScalaVersions := Seq("2.11.11", "2.12.7")
 
 scalacOptions := Seq(
   "-unchecked",
@@ -22,9 +22,9 @@ scalacOptions := Seq(
 ) else Nil)
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.25.0",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.9.0",
-  "com.frugalmechanic" %% "fm-xml" % "0.11.0",
+  "com.frugalmechanic" %% "fm-common" % "0.26.0",
+  "com.frugalmechanic" %% "fm-lazyseq" % "0.10.0",
+  "com.frugalmechanic" %% "fm-xml" % "0.12.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
 )
 
@@ -48,13 +48,13 @@ libraryDependencies ++= Seq(
 //          solution.
 //
 
-val ApachePOIVersion = "3.17"
+val ApachePOIVersion = "4.0.0"
 
 libraryDependencies ++= Seq(
   "org.apache.poi" % "poi" % ApachePOIVersion,
   "org.apache.poi" % "poi-ooxml" % ApachePOIVersion,
   "org.apache.poi" % "poi-ooxml-schemas" % ApachePOIVersion,
-  "com.fasterxml.woodstox" % "woodstox-core" % "5.0.2"
+  "com.fasterxml.woodstox" % "woodstox-core" % "5.1.0"
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
