@@ -21,11 +21,9 @@ import fm.common.Logging
 import org.apache.poi.hssf.eventusermodel._
 import org.apache.poi.hssf.eventusermodel.dummyrecord._
 import org.apache.poi.ss.formula.eval.ErrorEval
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.hssf.record._
 import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import org.apache.poi.hssf.usermodel.HSSFDataFormat
-
 import scala.util.{Success, Try}
 
 private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatFileReaderOptions, f: Try[FlatFileParsedRow] => T) extends HSSFListener with Logging {
@@ -136,13 +134,13 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
           None
         } else {
           val formulaString: String = frec.getCachedResultType match {
-            case Cell.CELL_TYPE_NUMERIC => formatListener.formatNumberDateCell(frec)
-            case Cell.CELL_TYPE_STRING => formatListener.formatNumberDateCell(frec)
-            case Cell.CELL_TYPE_BOOLEAN => frec.getCachedBooleanValue() match {
+            case 0 /* CellType.NUMERIC */ => formatListener.formatNumberDateCell(frec)
+            case 1 /* CellType.STRING */ => formatListener.formatNumberDateCell(frec)
+            case 4 /* CellType.BOOLEAN */ => frec.getCachedBooleanValue() match {
               case false => "FALSE"
               case true => "TRUE"
             }
-            case Cell.CELL_TYPE_ERROR => ErrorEval.getText(frec.getCachedErrorValue())
+            case 5 /* CellType.ERROR */ => ErrorEval.getText(frec.getCachedErrorValue())
             case _ => logger.warn("Unknown Formula Result Type"); "<unknown>"
           }
           Some(Column(frec.getRow, frec.getColumn(), formulaString))
