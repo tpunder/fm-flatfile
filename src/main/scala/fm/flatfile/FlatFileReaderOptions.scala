@@ -50,7 +50,7 @@ object FlatFileReaderOptions {
   case object AutoDetectQuote extends QuoteOption
   final case class ExplicitQuote(quote: String) extends QuoteOption
   
-  implicit def toQuoteOption(quote: String): QuoteOption = if(quote.isBlank) NoQuote else ExplicitQuote(quote)
+  implicit def toQuoteOption(quote: String): QuoteOption = if(quote.isNullOrBlank) NoQuote else ExplicitQuote(quote)
   implicit def toQuoteOption(quote: Option[String]): QuoteOption = toQuoteOption(quote.getOrElse(null))
   
   val default: FlatFileReaderOptions = FlatFileReaderOptions()

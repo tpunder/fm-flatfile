@@ -26,7 +26,7 @@ object FlatFileRowHeaders {
   
   def cleanHeaderValues(values: IndexedSeq[String]): IndexedSeq[String] = {
     // Drop trailing blank values
-    values.map{ _.trim }.reverse.dropWhile{ _.isBlank }.reverse
+    values.map{ _.trim }.reverse.dropWhile{ _.isNullOrBlank }.reverse
   }
 }
 

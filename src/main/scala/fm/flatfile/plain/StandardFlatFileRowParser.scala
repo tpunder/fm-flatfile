@@ -96,7 +96,7 @@ object StandardFlatFileRowParser extends Logging {
     }
 
     val detectedSep: String = matcher.group(2)
-    // Can't use .isNotBlank because a tab counts as being blank (all whitespace)
+    // Can't use .isNotNullOrBlank because a tab counts as being blank (all whitespace)
     if (null != sep && "" != sep) require(sep == detectedSep, "Expected explicit seperator and detected seperator to match!  Explicit: '"+sep+"'  Detected: '"+detectedSep+"'")
 
     require(!detectedSep.startsWith(" ") && !detectedSep.endsWith(" "), "Sep starts or ends with spaces: \""+detectedSep+"\"")
@@ -124,7 +124,7 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
     if (0 == row.length) return Vector.empty
 
     // If this is a comment line return an empty record
-    if (comment.isNotBlank && row.nextCharsMatch(comment, 0)) return Vector.empty
+    if (comment.isNotNullOrBlank && row.nextCharsMatch(comment, 0)) return Vector.empty
     
     parseRowImpl(row)
   }

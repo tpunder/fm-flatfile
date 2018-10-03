@@ -39,7 +39,7 @@ object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   def isBlankLine(lineWithNumber: LineWithNumber, options: FlatFileReaderOptions): Boolean = {
     val line: CharSequence = lineWithNumber.line
     // Skip leading empty rows or commented rows
-    line.isBlank || (options.comment.isNotBlank && line.nextCharsMatch(options.comment, 0))
+    line.isNullOrBlank || (options.comment.isNotNullOrBlank && line.nextCharsMatch(options.comment, 0))
   }
   
   def toParsedRowReader(lineReader: LazySeq[LineWithNumber], options: FlatFileReaderOptions): LazySeq[Try[FlatFileParsedRow]] = {

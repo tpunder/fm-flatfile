@@ -110,7 +110,7 @@ final case class FlatFileRow(values: IndexedSeq[String], rawRowCharSequence: Cha
       val field: String = fields(i)
       if (hasCol(field)) {
         val v: String = apply(field)
-        if (v.isNotBlank) return v
+        if (v.isNotNullOrBlank) return v
       }
       i += 1
     }

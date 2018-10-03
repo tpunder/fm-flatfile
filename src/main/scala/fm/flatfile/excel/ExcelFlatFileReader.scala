@@ -89,7 +89,7 @@ object ExcelFlatFileReader extends ExcelFlatFileReader {
    * Attempts to parse an excel formatted date
    */
   def parseExcelDate(dateStr: String): LocalDate = {
-    require(dateStr.isNotBlank, "dateStr is blank!")
+    require(dateStr.isNotNullOrBlank, "dateStr is blank!")
 
     {
       var i: Int = 0
@@ -166,7 +166,7 @@ trait ExcelFlatFileReader extends FlatFileReaderImpl[InputStream] {
   
   final def isBlankLine(line: Try[FlatFileParsedRow], options: FlatFileReaderOptions): Boolean = {
     // TODO: figure out if we want to trigger the exception here via the Try.get.  Would there even be exceptions for reading Excel lines?
-    line.get.values.forall{ _.isBlank }
+    line.get.values.forall{ _.isNullOrBlank }
   }
   
   /** no-op */

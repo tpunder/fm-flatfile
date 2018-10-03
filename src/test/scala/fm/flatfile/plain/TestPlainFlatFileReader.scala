@@ -448,7 +448,7 @@ bar,789,3, ewq
   }
   
   test("FlatFileReaderRowParser - Tab Sep") {
-    // Some of the code was using .isBlank/.isNotBlank and since a tab counts as blank it was
+    // Some of the code was using .isNullOrBlank/.isNotNullOrBlank and since a tab counts as blank it was
     // messing up some of the auto-detection code and not using the specified sep
     val reader = makeFlatFileReader("1,2,3", FlatFileReaderOptions(hasHeaders=false, sep="\t", quote=None))
 

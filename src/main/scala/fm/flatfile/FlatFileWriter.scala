@@ -43,7 +43,7 @@ object FlatFileWriter {
 }
 
 final class FlatFileWriter(writer: Writer, options: FlatFileWriterOptions) {
-  private[this] val hasQuote: Boolean = options.quote.isNotBlank
+  private[this] val hasQuote: Boolean = options.quote.isNotNullOrBlank
   private[this] val quotedQuote: String = if (hasQuote) options.quote+options.quote else ""
 
   private[this] var headerLookup: FlatFileRowHeaders = _
