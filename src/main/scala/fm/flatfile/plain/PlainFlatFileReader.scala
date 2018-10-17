@@ -16,19 +16,17 @@
 package fm.flatfile.plain
 
 import fm.flatfile.{FlatFileParsedRow, FlatFileReaderImpl, FlatFileReaderOptions}
-import fm.common.IOUtils
+import fm.common.{InputStreamResource, Resource}
 import fm.common.Implicits._
 import fm.lazyseq.LazySeq
 import scala.util.Try
-import java.io.{BufferedInputStream, BufferedReader, InputStream, InputStreamReader, Reader}
+import java.io.Reader
 
 object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   type LINE = LineWithNumber
-  
-  def inputStreamToIN(is: InputStream, options: FlatFileReaderOptions): Reader = {
-    val bis: BufferedInputStream = is.toBufferedInputStream
-    val charset: String = IOUtils.detectCharsetName(bis, useMarkReset = true).getOrElse("UTF-8")
-    new BufferedReader(new InputStreamReader(bis, charset))
+
+  def inputStreamResourceToResourceIN(resource: InputStreamResource, options: FlatFileReaderOptions): Resource[Reader] = {
+    resource.readerWithDetectedCharset()
   }
   
   def makeLineReader(reader: Reader, options: FlatFileReaderOptions): LazySeq[LINE] = {

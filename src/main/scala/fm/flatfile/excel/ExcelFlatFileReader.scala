@@ -162,7 +162,7 @@ trait ExcelFlatFileReader extends FlatFileReaderImpl[InputStream] {
   def makeLineReader(in: InputStream, options: FlatFileReaderOptions): LazySeq[Try[FlatFileParsedRow]]
 
   /** no-op */
-  final def inputStreamToIN(is: InputStream, options: FlatFileReaderOptions): InputStream = is
+  final def inputStreamResourceToResourceIN(is: InputStreamResource, options: FlatFileReaderOptions): InputStreamResource = is
   
   final def isBlankLine(line: Try[FlatFileParsedRow], options: FlatFileReaderOptions): Boolean = {
     // TODO: figure out if we want to trigger the exception here via the Try.get.  Would there even be exceptions for reading Excel lines?

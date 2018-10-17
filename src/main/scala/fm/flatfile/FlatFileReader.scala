@@ -50,7 +50,7 @@ object FlatFileReader extends FlatFileReaderFactory {
         else if (XMLUtil.isXML(is)) throw new FlatFileReaderException.InvalidFlatFile("Looks like an XML File and NOT a flat file")
         else PlainFlatFileReader
         
-      impl.foreach(is, options)(f)
+      impl.foreach(InputStreamResource.forInputStream(is), options)(f)
     }
   }
   

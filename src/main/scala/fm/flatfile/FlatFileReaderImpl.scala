@@ -18,24 +18,22 @@ package fm.flatfile
 import fm.common.{InputStreamResource, Normalize, Resource}
 import fm.lazyseq.LazySeq
 import scala.util.{Failure, Success, Try}
-import java.io.InputStream
 
 /**
  * This is what you extends to implement a new FlatFileReader type
  */
 trait FlatFileReaderImpl[IN] extends FlatFileReaderFactory { 
-  final def apply(resource: InputStreamResource, options: FlatFileReaderOptions): FlatFileReader = apply(resource.map{ inputStreamToIN(_, options) }, options)
-
+  final def apply(resource: InputStreamResource, options: FlatFileReaderOptions): FlatFileReader = apply(inputStreamResourceToResourceIN(resource, options), options)
   final def apply(resource: Resource[IN]): FlatFileReader = apply(resource, FlatFileReaderOptions.default)
   final def apply(resource: Resource[IN], options: FlatFileReaderOptions): FlatFileReader = new FlatFileReaderForImpl(resource, options, this)
   
   type LINE
-  
+
   /**
    * Transform an InputStream to whatever our IN type is (IN can be an InputStream in which case this is a no-op)
    */
-  def inputStreamToIN(is: InputStream, options: FlatFileReaderOptions): IN
-  
+  def inputStreamResourceToResourceIN(resource: InputStreamResource, options: FlatFileReaderOptions): Resource[IN]
+
   /**
    * Make a line reader given our IN instance
    */
@@ -52,9 +50,11 @@ trait FlatFileReaderImpl[IN] extends FlatFileReaderFactory {
   def toParsedRowReader(lineReader: LazySeq[LINE], options: FlatFileReaderOptions): LazySeq[Try[FlatFileParsedRow]]
   
   /**
-   * The foreach implementation for an InputStream
+   * The foreach implementation for an InputStreamResource
    */
-  final def foreach[U](is: InputStream, options: FlatFileReaderOptions)(f: Try[FlatFileRow] => U): Unit = foreach(inputStreamToIN(is, options), options)(f)
+  final def foreach[U](is: InputStreamResource, options: FlatFileReaderOptions)(f: Try[FlatFileRow] => U): Unit = inputStreamResourceToResourceIN(is, options).use{ in: IN =>
+    foreach(in, options)(f)
+  }
   
   /**
    * The foreach implementation for the native IN type
