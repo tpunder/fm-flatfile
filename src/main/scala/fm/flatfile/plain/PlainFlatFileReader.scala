@@ -21,6 +21,8 @@ import fm.common.Implicits._
 import fm.lazyseq.LazySeq
 import scala.util.Try
 import java.io.{BufferedInputStream, BufferedReader, InputStream, InputStreamReader, Reader}
+import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.input.BOMInputStream
 
 object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   type LINE = LineWithNumber
@@ -28,7 +30,11 @@ object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   def inputStreamToIN(is: InputStream, options: FlatFileReaderOptions): Reader = {
     val bis: BufferedInputStream = is.toBufferedInputStream
     val charset: String = IOUtils.detectCharsetName(bis, useMarkReset = true).getOrElse("UTF-8")
-    new BufferedReader(new InputStreamReader(bis, charset))
+
+    // TODO: This logic is duplicated in InputStreamResource and would ideally be factored out (maybe into IOUtils).
+    val bisWithoutBOM: InputStream = new BOMInputStream(is, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE)
+
+    new BufferedReader(new InputStreamReader(bisWithoutBOM, charset))
   }
   
   def makeLineReader(reader: Reader, options: FlatFileReaderOptions): LazySeq[LINE] = {
