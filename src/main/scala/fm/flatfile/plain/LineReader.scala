@@ -23,7 +23,7 @@ final class LineReader(reader: Reader) extends LazySeq[JavaStringBuilder] {
   private[this] val BufferSize: Int = 1024
   
   def foreach[U](f: JavaStringBuilder => U): Unit = {
-    var sb = new JavaStringBuilder
+    var sb: JavaStringBuilder = new JavaStringBuilder
     
     val buf: Array[Char] = new Array(BufferSize)
     var bufSize: Int = -1
@@ -46,7 +46,7 @@ final class LineReader(reader: Reader) extends LazySeq[JavaStringBuilder] {
         idx += 1
       }
       
-    } while(bufSize != -1)
+    } while (bufSize != -1)
       
     // If the last line is empty, skip it
     if (sb.length > 0) f(sb)

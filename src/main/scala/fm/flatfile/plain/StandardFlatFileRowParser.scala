@@ -19,6 +19,7 @@ import fm.flatfile.{FlatFileReaderOptions}
 import fm.common.{Logging, StacklessException}
 import fm.common.Implicits._
 import java.util.regex.Pattern
+import scala.collection.mutable.Builder
 
 object StandardFlatFileRowParser extends Logging {
   val DefaultQuote: String = "\""
@@ -105,20 +106,18 @@ object StandardFlatFileRowParser extends Logging {
     (detectedSep,detectedQuote)
   }
 
+  private case class ResumeInfo(columnValues: Builder[String, Vector[String]], idx: Int, tmpIdx: Int, columnValueBuffer: StringBuilder)
+
 }
 
 final class StandardFlatFileRowParser(val sep: String, val quote: String, val comment: String = null, strictQuoteEscaping: Boolean = false) extends FlatFileRowParser {
-  import StandardFlatFileRowParser.ReparseAsPlainException
+  import StandardFlatFileRowParser.{ReparseAsPlainException, ResumeInfo}
 
   private[this] val escapedQuote: String = quote+quote
   
   // Hack to add \" support for escaping quotes (used by mysqldump)
   // TODO: build out better support for this or make it an option
   private[this] val slashEscapedQuote: String = "\\"+quote
-
-  import scala.collection.mutable.Builder
-  
-  private case class ResumeInfo(columnValues: Builder[String, Vector[String]], idx: Int, tmpIdx: Int, columnValueBuffer: StringBuilder)
 
   final def parseRow(row: CharSequence): IndexedSeq[String] = {
     if (0 == row.length) return Vector.empty

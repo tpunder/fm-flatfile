@@ -21,6 +21,7 @@ import fm.common.Implicits._
 import fm.lazyseq.LazySeq
 import scala.util.Try
 import java.io.{BufferedInputStream, BufferedReader, InputStream, InputStreamReader, Reader}
+import java.lang.{StringBuilder => JavaStringBuilder}
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
 
@@ -38,7 +39,11 @@ object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   }
   
   def makeLineReader(reader: Reader, options: FlatFileReaderOptions): LazySeq[LINE] = {
-    val tmp: LazySeq[LINE] = new LineReader(reader).zipWithIndex.map{ case (line, idx) => LineWithNumber(line, idx + 1) }
+    val tmp: LazySeq[LINE] = new LineReader(reader).zipWithIndex.map{ pair: (JavaStringBuilder, Int) =>
+      val line: JavaStringBuilder = pair._1
+      val idx: Int = pair._2
+      LineWithNumber(line, idx + 1)
+    }
     options.plainLineReaderTransform(tmp)
   }
   
