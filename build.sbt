@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "com.frugalmechanic" %% "fm-common" % "0.35.0",
   "com.frugalmechanic" %% "fm-lazyseq" % "0.12.0",
   "com.frugalmechanic" %% "fm-xml" % "0.15.0",
-  "com.frugalmechanic" %% "scala-optparse" % "1.1.2"
+  "com.frugalmechanic" %% "scala-optparse" % "1.1.3"
 )
 
 // These dependencies are for Excel reading support.
