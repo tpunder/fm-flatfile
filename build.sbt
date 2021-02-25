@@ -4,9 +4,9 @@ name := "fm-flatfile"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.13"
 
-crossScalaVersions := Seq("2.11.11", "2.12.8")
+crossScalaVersions := Seq("2.11.12", "2.12.13")
 
 scalacOptions := Seq(
   "-unchecked",
@@ -22,9 +22,9 @@ scalacOptions := Seq(
 ) else Nil)
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.35.0",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.12.0",
-  "com.frugalmechanic" %% "fm-xml" % "0.15.0",
+  "com.frugalmechanic" %% "fm-common" % "0.50.0",
+  "com.frugalmechanic" %% "fm-lazyseq" % "0.14.0",
+  "com.frugalmechanic" %% "fm-xml" % "0.16.0",
   "com.frugalmechanic" %% "scala-optparse" % "1.1.3"
 )
 
