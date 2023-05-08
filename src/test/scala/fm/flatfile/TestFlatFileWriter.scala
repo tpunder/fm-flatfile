@@ -16,12 +16,12 @@
 package fm.flatfile
 
 import fm.common.{OutputStreamResource, UTF_8_BOM}
-import org.scalatest.FunSuite
-import org.scalatest.Matchers
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import java.io.{ByteArrayOutputStream, StringWriter}
 import java.nio.charset.{Charset, StandardCharsets}
 
-final class TestFlatFileWriter extends FunSuite with Matchers {
+final class TestFlatFileWriter extends AnyFunSuite with Matchers {
   private val default = FlatFileWriterOptions.default
   private val csv = FlatFileWriterOptions(sep = ",")
   private val tsv = FlatFileWriterOptions(sep = "\t")
@@ -65,7 +65,7 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
     checkMultiRowOutputStream(options, StandardCharsets.UTF_16LE)(f)(expected)
   }
 
-  private def checkMultiRowWriter(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String) {
+  private def checkMultiRowWriter(options: FlatFileWriterOptions)(f: FlatFileWriter => Unit)(expected: String): Unit = {
     val sw = new StringWriter
     val ffw: FlatFileWriter = new FlatFileWriter(sw, options)
     ffw.writeHeaders()
@@ -73,7 +73,7 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
     sw.toString() should equal (expected)
   }
 
-  private def checkMultiRowOutputStream(options: FlatFileWriterOptions, charset: Charset)(f: FlatFileWriter => Unit)(expected: String) {
+  private def checkMultiRowOutputStream(options: FlatFileWriterOptions, charset: Charset)(f: FlatFileWriter => Unit)(expected: String): Unit = {
     val os: ByteArrayOutputStream = new ByteArrayOutputStream
     FlatFileWriter(OutputStreamResource.wrap(os), charset, options)(f)
 
@@ -94,7 +94,7 @@ final class TestFlatFileWriter extends FunSuite with Matchers {
     new String(bytes, charset) should equal (expected)
   }
   
-  private def checkRow(options: FlatFileWriterOptions, row: Seq[String], expected: String) {
+  private def checkRow(options: FlatFileWriterOptions, row: Seq[String], expected: String): Unit = {
     checkMultiRow(options){ _.writeRow(row) }(expected+"\n")
   }
   

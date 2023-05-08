@@ -44,7 +44,7 @@ object FlatFileReader extends FlatFileReaderFactory {
   }
   
   private class AutoDetectingFlatFileReaderWithTries(resource: InputStreamResource, options: FlatFileReaderOptions) extends FlatFileReaderWithTries {
-    def foreach[U](f: Try[FlatFileRow] => U): Unit = resource.buffered().use { is: BufferedInputStream =>
+    def foreach[U](f: Try[FlatFileRow] => U): Unit = resource.buffered().use { (is: BufferedInputStream) =>
       val impl: FlatFileReaderImpl[_] = 
         if (ExcelFlatFileReader.isExcelFormat(is)) ExcelFlatFileReader
         else if (XMLUtil.isXML(is)) throw new FlatFileReaderException.InvalidFlatFile("Looks like an XML File and NOT a flat file")
@@ -68,7 +68,7 @@ object FlatFileReader extends FlatFileReaderFactory {
     val format = StrOpt(desc = "Valid export formats: 'tsv' or 'csv'", validWith=out)
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     Options.parse(args)
 
     val file = new File(Options.file.get)
@@ -83,7 +83,7 @@ object FlatFileReader extends FlatFileReaderFactory {
     var tmp: LazySeq[FlatFileRow] = reader
     if (Options.head) tmp = tmp.take(Options.head.get)
 
-    optionallyOutput(tmp){ row: FlatFileRow =>
+    optionallyOutput(tmp){ (row: FlatFileRow) =>
       if (first) {
         println(row.headers.mkString(", "))
         first = false
@@ -104,8 +104,8 @@ object FlatFileReader extends FlatFileReaderFactory {
       } else FlatFileWriterOptions.TSV
 
       println(s"Reading From: ${Options.file()}, Writing to: ${Options.out()}")
-      FlatFileWriter(FileOutputStreamResource(Options.out()), options=format) { out: FlatFileWriter =>
-        reader.onFirst{ row: FlatFileRow => out.writeRow(row.headers) }.foreach { row: FlatFileRow =>
+      FlatFileWriter(FileOutputStreamResource(Options.out()), options=format) { (out: FlatFileWriter) =>
+        reader.onFirst{ (row: FlatFileRow) => out.writeRow(row.headers) }.foreach { (row: FlatFileRow) =>
           out.writeRow(row.values)
           f(row)
         }

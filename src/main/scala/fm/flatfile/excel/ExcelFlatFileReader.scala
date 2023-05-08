@@ -143,7 +143,7 @@ object ExcelFlatFileReader extends ExcelFlatFileReader {
     
     while (num > 0) {
       val ch: Int = (num - 1) % 26
-      column = (ch + 65).toChar + column
+      column = s"${(ch + 65).toChar}$column"
       num = (num - ch + 1) / 26
     }
     

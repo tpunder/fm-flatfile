@@ -41,7 +41,7 @@ final class XLSXStreamReaderImpl(is: InputStream, options: FlatFileReaderOptions
       var done: Boolean = false
       
       while (sheetsData.hasNext && !done) {
-        SingleUseResource(sheetsData.next).use { sheetInputStream: InputStream =>
+        SingleUseResource(sheetsData.next).use { (sheetInputStream: InputStream) =>
           val sheetName: String = sheetsData.getSheetName
           
           if (null == options.sheetName || sheetName.equalsIgnoreCase(options.sheetName)) {

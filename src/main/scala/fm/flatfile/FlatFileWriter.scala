@@ -16,7 +16,7 @@
 package fm.flatfile
 
 import fm.common.Implicits._
-import fm.common.OutputStreamResource
+import fm.common.{ImmutableArray, OutputStreamResource}
 import java.io.Writer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets.UTF_8
@@ -35,7 +35,7 @@ object FlatFileWriter {
   }
 
   def apply[T](out: OutputStreamResource, charset: Charset, options: FlatFileWriterOptions)(f: FlatFileWriter => T): T = {
-    out.writer(charset).map{ new FlatFileWriter(_, options) }.use{ flatFileWriter: FlatFileWriter =>
+    out.writer(charset).map{ new FlatFileWriter(_, options) }.use{ (flatFileWriter: FlatFileWriter) =>
       flatFileWriter.writeHeaders()
       f(flatFileWriter)
     }
@@ -89,7 +89,7 @@ final class FlatFileWriter(writer: Writer, options: FlatFileWriterOptions) {
       arr(idx.get) = value
     }
     
-    writeRow(arr)
+    writeRow(ImmutableArray.unsafeWrapArray(arr))
   }
   
   def writeRow(row: Seq[String]): Unit = {
@@ -101,7 +101,7 @@ final class FlatFileWriter(writer: Writer, options: FlatFileWriterOptions) {
     
     var firstColumn: Boolean = true
     
-    row.foreach { s: String =>
+    row.foreach { (s: String) =>
       if (!firstColumn) writer.write(options.sep) else firstColumn = false
       writer.write(quote(s))
     }

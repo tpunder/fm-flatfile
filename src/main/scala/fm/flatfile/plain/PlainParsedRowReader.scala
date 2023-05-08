@@ -40,7 +40,7 @@ final class PlainParsedRowReader(lineReader: LazySeq[LineWithNumber], options: F
       row = null
     }
     
-    lineReader.foreach { lineWithNumber: LineWithNumber =>      
+    lineReader.foreach { (lineWithNumber: LineWithNumber) =>
       val nextLine: JavaStringBuilder = lineWithNumber.line 
       
       // If the line isn't null then we append the nextLine because this must be a multi-line row

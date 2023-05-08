@@ -18,10 +18,10 @@ package fm.flatfile.excel
 import fm.common.InputStreamResource
 import fm.flatfile.{FlatFileReaderFactory, FlatFileReaderOptions, FlatFileRow}
 import java.io.{BufferedInputStream, File}
-import org.scalatest.FunSuite
-import org.scalatest.Matchers
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory, file: String) extends FunSuite with Matchers {
+abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory, file: String) extends AnyFunSuite with Matchers {
 
   private def isXLS: Boolean = file.toLowerCase.endsWith(".xls")
   private def isXLSX: Boolean = file.toLowerCase.endsWith(".xlsx")
@@ -34,7 +34,7 @@ abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory,
   }
   
   test("File Type Detection") {
-    InputStreamResource.forResource(new File(file)).buffered().use{ is: BufferedInputStream =>
+    InputStreamResource.forResource(new File(file)).buffered().use{ (is: BufferedInputStream) =>
       // These are called multiple times to make sure the underlying implementation is 
       // properly using mark()/reset() on the BufferedInputStream
       ExcelFlatFileReader.isXLSFormat(is) should equal (isXLS)
@@ -45,7 +45,7 @@ abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory,
   }
   
   test("Headers") {
-    flatFileRows().foreach{ row: FlatFileRow =>
+    flatFileRows().foreach{ (row: FlatFileRow) =>
       row.headers should equal (TestExcelFlatFileReader.headers)
     }
   }
@@ -78,7 +78,7 @@ abstract class TestExcelFlatFileReaderCommon[IN](factory: FlatFileReaderFactory,
   test("Header Options - Specify Row") {
     val headers: IndexedSeq[String] = TestExcelFlatFileReader.values(1) // 0 Based + 1 for Header
     val options = FlatFileReaderOptions(skipLines = 2)
-    flatFileRows(options).foreach{ row: FlatFileRow => row.headers should equal (headers) }
+    flatFileRows(options).foreach{ (row: FlatFileRow) => row.headers should equal (headers) }
   }
 
   test("Header Options - AutoDetect Row - ALL") {

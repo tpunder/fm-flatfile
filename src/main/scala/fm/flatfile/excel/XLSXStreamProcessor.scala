@@ -17,7 +17,7 @@ package fm.flatfile.excel
 
 import java.io.InputStream
 import java.lang.Double
-import org.apache.poi.ss.usermodel.{BuiltinFormats, DataFormatter}
+import org.apache.poi.ss.usermodel.{BuiltinFormats, DataFormatter, RichTextString}
 import org.apache.poi.xssf.model.StylesTable
 import org.apache.poi.xssf.usermodel.{XSSFCellStyle, XSSFRichTextString}
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable
@@ -32,11 +32,12 @@ private[excel] final class XLSXStreamProcessor(options: FlatFileReaderOptions, s
   
   // Created a cached copy of the plain shared strings from the shared strings table
   private[this] val plainSharedStrings: Array[String] = new Array(stringsTable.getUniqueCount)
-  (0 until stringsTable.getUniqueCount).foreach { i: Int =>
-    plainSharedStrings(i) = richStringToPlain(stringsTable.getEntryAt(i))
+  (0 until stringsTable.getUniqueCount).foreach { (i: Int) =>
+    plainSharedStrings(i) = richStringToPlain(stringsTable.getItemAt(i))
   }
-  
-  private def richStringToPlain(s: String): String = new XSSFRichTextString(s).toString
+
+  private def richStringToPlain(s: String): String = richStringToPlain(new XSSFRichTextString(s))
+  private def richStringToPlain(rich: RichTextString): String = rich.toString
   
   def processSheet[U](sheetInputStream: InputStream, f: Try[FlatFileParsedRow] => U): Unit = {
     import com.ctc.wstx.stax.WstxInputFactory
@@ -82,12 +83,12 @@ private[excel] final class XLSXStreamProcessor(options: FlatFileReaderOptions, s
             var value: String = ""
             
             if (cellType == "inlineStr") sr.foreach("is/t"){ value = richStringToPlain(sr.readElementText()) }
-            else value = sr.tryReadChildElementText("v").map{ value: String => formatCell(cellType, cellStyle, value) }.getOrElse("")
+            else value = sr.tryReadChildElementText("v").map{ (value: String) => formatCell(cellType, cellStyle, value) }.getOrElse("")
             
             values += value
           }
           
-          FlatFileParsedRow(values = values.result, rawRow = "", lineNumber = rowNumber)
+          FlatFileParsedRow(values = values.result(), rawRow = "", lineNumber = rowNumber)
         }
         
         f(row)

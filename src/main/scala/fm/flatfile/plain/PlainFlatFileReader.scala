@@ -39,7 +39,7 @@ object PlainFlatFileReader extends FlatFileReaderImpl[Reader] {
   }
   
   def makeLineReader(reader: Reader, options: FlatFileReaderOptions): LazySeq[LINE] = {
-    val tmp: LazySeq[LINE] = new LineReader(reader).zipWithIndex.map{ pair: (JavaStringBuilder, Int) =>
+    val tmp: LazySeq[LINE] = new LineReader(reader).zipWithIndex.map{ (pair: (JavaStringBuilder, Int)) =>
       val line: JavaStringBuilder = pair._1
       val idx: Int = pair._2
       LineWithNumber(line, idx + 1)

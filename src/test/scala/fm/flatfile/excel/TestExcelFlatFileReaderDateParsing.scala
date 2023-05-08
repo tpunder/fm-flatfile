@@ -15,11 +15,10 @@
  */
 package fm.flatfile.excel
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers
-import fm.common.TestHelpers
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-final class TestExcelFlatFileReaderDateParsing extends FunSuite with Matchers {
+final class TestExcelFlatFileReaderDateParsing extends AnyFunSuite with Matchers {
   
   test("Excel Date Parsing") {
     check("8/1/11")
@@ -58,7 +57,7 @@ final class TestExcelFlatFileReaderDateParsing extends FunSuite with Matchers {
     check("2011-08-01")
   }
   
-  def check(s: String, expected: String = "2011-08-01"): Unit = TestHelpers.withCallerInfo {
+  def check(s: String, expected: String = "2011-08-01"): Unit = {
     ExcelFlatFileReader.parseExcelDate(s).toString should equal (expected)
   }
 }

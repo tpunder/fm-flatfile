@@ -24,7 +24,7 @@ import scala.util.Try
 import org.xml.sax.SAXException
 
 final class XLSXStreamReader(resource: Resource[InputStream], options: FlatFileReaderOptions) extends LazySeq[Try[FlatFileParsedRow]] {
-  def foreach[U](f: Try[FlatFileParsedRow] => U): Unit = resource.use { is: InputStream =>
+  def foreach[U](f: Try[FlatFileParsedRow] => U): Unit = resource.use { (is: InputStream) =>
     val reader = new XLSXStreamReaderImpl(is, options)
     reader.map{ unwrapSAXException }.foreach(f)
   }

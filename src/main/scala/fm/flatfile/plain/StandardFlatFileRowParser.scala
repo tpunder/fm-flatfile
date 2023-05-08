@@ -175,7 +175,7 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
       }
       
       columnValues += columnValueBuffer.toString
-      columnValueBuffer.clear
+      columnValueBuffer.clear()
       idx = newIdx
     }
     
@@ -215,13 +215,13 @@ final class StandardFlatFileRowParser(val sep: String, val quote: String, val co
         }
 
         columnValues += columnValueBuffer.toString
-        columnValueBuffer.clear
+        columnValueBuffer.clear()
         idx = newIdx
       }
     }
 
     if (row.nextCharsMatch(sep, row.length-sep.length)) columnValues += "" // Add a blank record if the last character is a separator
-    columnValues.result
+    columnValues.result()
   }
 
 

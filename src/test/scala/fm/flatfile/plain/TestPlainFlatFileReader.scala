@@ -15,13 +15,13 @@
  */
 package fm.flatfile.plain
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import java.io.StringReader
 import fm.common.{InputStreamResource, MultiUseResource}
 import fm.flatfile.{FlatFileReader, FlatFileReaderException, FlatFileReaderOptions}
 
-final class TestPlainFlatFileReader extends FunSuite with Matchers {
+final class TestPlainFlatFileReader extends AnyFunSuite with Matchers {
   val csvParser = new StandardFlatFileRowParser(sep=",", quote="'")
   val csvCommentParser = new StandardFlatFileRowParser(sep=",", quote="'", comment="#")
   val tsvParser = new StandardFlatFileRowParser(sep="\t", quote="'")
@@ -517,7 +517,7 @@ bar,789,2
   }
 
 
-val csvHeaderAndRowParsing = """
+  val csvHeaderAndRowParsing = """
 name, price| ,q@t#y
 foo ,123,1
 """.trim
@@ -577,7 +577,7 @@ asd,qwe,zxc
     ))
   }
 
-  def checkPlainParse(parser: StandardFlatFileRowParser, restOfLine: String, expected: String, idx: Int = 0) {
+  def checkPlainParse(parser: StandardFlatFileRowParser, restOfLine: String, expected: String, idx: Int = 0): Unit = {
     val buffer = new StringBuilder
     buffer ++= restOfLine
 
@@ -587,7 +587,7 @@ asd,qwe,zxc
     result.toString should equal(expected)
   }
 
-  def checkQuotedParse(parser: StandardFlatFileRowParser, restOfLine: String, expected: String, idx: Int = 0) {
+  def checkQuotedParse(parser: StandardFlatFileRowParser, restOfLine: String, expected: String, idx: Int = 0): Unit = {
     val buffer = new StringBuilder
     buffer ++= restOfLine
 
@@ -597,11 +597,11 @@ asd,qwe,zxc
     result.toString should equal(expected)
   }
 
-  def checkParseRow(parser: StandardFlatFileRowParser, line: String, expected: IndexedSeq[String]) {
+  def checkParseRow(parser: StandardFlatFileRowParser, line: String, expected: IndexedSeq[String]): Unit = {
     parser.parseRow(line) should equal(expected)
   }
 
-  def testAutoDetect(sep: String, quote: String, line: String, comment: String = null) {
+  def testAutoDetect(sep: String, quote: String, line: String, comment: String = null): Unit = {
     val (detectedSep,detectedQuote) = StandardFlatFileRowParser.autoDetectSepAndQuote(line, comment)
     
     detectedSep should equal (sep)

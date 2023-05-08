@@ -24,6 +24,7 @@ import org.apache.poi.ss.formula.eval.ErrorEval
 import org.apache.poi.hssf.record._
 import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import org.apache.poi.hssf.usermodel.HSSFDataFormat
+import org.apache.poi.ss.usermodel.CellType
 import scala.util.{Success, Try}
 
 private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatFileReaderOptions, f: Try[FlatFileParsedRow] => T) extends HSSFListener with Logging {
@@ -133,14 +134,14 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
           nextColumn = frec.getColumn()
           None
         } else {
-          val formulaString: String = frec.getCachedResultType match {
-            case 0 /* CellType.NUMERIC */ => formatListener.formatNumberDateCell(frec)
-            case 1 /* CellType.STRING */ => formatListener.formatNumberDateCell(frec)
-            case 4 /* CellType.BOOLEAN */ => frec.getCachedBooleanValue() match {
+          val formulaString: String = frec.getCachedResultTypeEnum match {
+            case CellType.NUMERIC => formatListener.formatNumberDateCell(frec)
+            case CellType.STRING => formatListener.formatNumberDateCell(frec)
+            case CellType.BOOLEAN => frec.getCachedBooleanValue() match {
               case false => "FALSE"
               case true => "TRUE"
             }
-            case 5 /* CellType.ERROR */ => ErrorEval.getText(frec.getCachedErrorValue())
+            case CellType.ERROR => ErrorEval.getText(frec.getCachedErrorValue())
             case _ => logger.warn("Unknown Formula Result Type"); "<unknown>"
           }
           Some(Column(frec.getRow, frec.getColumn(), formulaString))
@@ -190,7 +191,7 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
       case _ => None
     }
 
-    column.foreach { c: Column => 
+    column.foreach { (c: Column) =>
       // Handle new row
       if (c.row != lastRowNumber) lastColumnNumber = -1 
       
@@ -204,7 +205,7 @@ private[excel] final class XLSStreamProcessor[T](is: InputStream, options: FlatF
 
     // Handle end of row
     if (record.isInstanceOf[LastCellOfRowDummyRecord]) {
-      val values: Vector[String] = rowBuilder.result
+      val values: Vector[String] = rowBuilder.result()
       rowBuilder = Vector.newBuilder[String] // Cleanup
 
       f(Success(FlatFileParsedRow(values, rawRow = "", lastRowNumber + 1)))

@@ -29,7 +29,7 @@ final class FlatFileReaderForImpl[IN](resource: Resource[IN], options: FlatFileR
 
 final class FlatFileReaderWithTriesForImpl[IN](resource: Resource[IN], options: FlatFileReaderOptions, impl: FlatFileReaderImpl[IN]) extends FlatFileReaderWithTries {
   
-  def foreach[U](f: Try[FlatFileRow] => U): Unit = resource.use { in: IN =>
+  def foreach[U](f: Try[FlatFileRow] => U): Unit = resource.use { (in: IN) =>
     impl.foreach(in, options)(f)
   }
 }

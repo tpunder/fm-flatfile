@@ -61,13 +61,13 @@ trait FlatFileReaderImpl[IN] extends FlatFileReaderFactory {
    */
   final def foreach[U](in: IN, options: FlatFileReaderOptions)(f: Try[FlatFileRow] => U): Unit = {
     
-    val lineReader: LazySeq[LINE] = makeLineReader(in, options).drop(options.skipLines).dropRight(options.skipTrailingLines).dropWhile { line: LINE =>
+    val lineReader: LazySeq[LINE] = makeLineReader(in, options).drop(options.skipLines).dropRight(options.skipTrailingLines).dropWhile { (line: LINE) =>
       isBlankLine(line, options)
     }
     
     var parsedRowReader: LazySeq[Try[FlatFileParsedRow]] = toParsedRowReader(lineReader, options)
     
-    if (options.skipEmptyLines) parsedRowReader = parsedRowReader.filterNot{ row: Try[FlatFileParsedRow] => row.isSuccess && (row.get.values.isEmpty || row.get.values.forall{ _.isEmpty }) }
+    if (options.skipEmptyLines) parsedRowReader = parsedRowReader.filterNot{ (row: Try[FlatFileParsedRow]) => row.isSuccess && (row.get.values.isEmpty || row.get.values.forall{ _.isEmpty }) }
     
     var columnCount: Int = if (options.columnCount > 0) options.columnCount else -1
     

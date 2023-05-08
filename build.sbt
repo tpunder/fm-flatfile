@@ -1,12 +1,19 @@
-FMPublic
-
 name := "fm-flatfile"
 
 description := "TSV/CSV/FlatFile Reader"
 
-scalaVersion := "2.12.13"
+scalaVersion := "3.2.2"
 
-crossScalaVersions := Seq("2.11.12", "2.12.13")
+crossScalaVersions := Seq("3.2.2", "2.13.10", "2.12.17", "2.11.12")
+
+val fatalWarnings = Seq(
+  // Enable -Xlint, but disable the default 'unused' so we can manually specify below
+  "-Xlint:-unused",
+  // Remove "params" since we often have method signatures that intentionally have the parameters, but may not be used in every implementation, also omit "patvars" since it isn't part of the default xlint:unused and isn't super helpful
+  "-Ywarn-unused:imports,privates,locals",
+  // Warnings become Errors
+  "-Xfatal-warnings"
+)
 
 scalacOptions := Seq(
   "-unchecked",
@@ -14,18 +21,22 @@ scalacOptions := Seq(
   "-language:implicitConversions",
   "-feature",
   "-Xlint",
+) ++ (if (scalaVersion.value.startsWith("2.11")) Seq(
+  // Scala 2.11 specific compiler flags
   "-Ywarn-unused-import"
-) ++ (if (scalaVersion.value.startsWith("2.12")) Seq(
-  // Scala 2.12 specific compiler flags
+) else Nil) ++ (if (scalaVersion.value.startsWith("2.12") || scalaVersion.value.startsWith("2.13")) Seq(
+  // Scala 2.12/2.13 specific compiler flags
   "-opt:l:inline",
   "-opt-inline-from:<sources>"
+) ++ fatalWarnings else Nil) ++ (if (scalaVersion.value.startsWith("3")) Seq(
+  //"-Yno-decode-stacktraces"
 ) else Nil)
 
 libraryDependencies ++= Seq(
-  "com.frugalmechanic" %% "fm-common" % "0.50.0",
-  "com.frugalmechanic" %% "fm-lazyseq" % "0.14.0",
-  "com.frugalmechanic" %% "fm-xml" % "0.16.0",
-  "com.frugalmechanic" %% "scala-optparse" % "1.1.3"
+  "com.frugalmechanic" %% "fm-common" % "1.0.1",
+  "com.frugalmechanic" %% "fm-lazyseq" % "1.0.0",
+  "com.frugalmechanic" %% "fm-xml" % "1.0.0",
+  "com.frugalmechanic" %% "scala-optparse" % "1.2.1"
 )
 
 // These dependencies are for Excel reading support.
@@ -48,13 +59,15 @@ libraryDependencies ++= Seq(
 //          solution.
 //
 
-val ApachePOIVersion = "4.0.1"
+val ApachePOIVersion = "5.2.3"
 
 libraryDependencies ++= Seq(
   "org.apache.poi" % "poi" % ApachePOIVersion,
   "org.apache.poi" % "poi-ooxml" % ApachePOIVersion,
-  "org.apache.poi" % "poi-ooxml-schemas" % ApachePOIVersion,
+  "org.apache.poi" % "poi-ooxml-lite" % ApachePOIVersion,
   "com.fasterxml.woodstox" % "woodstox-core" % "5.1.0"
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % Test
+
+publishTo := sonatypePublishToBundle.value

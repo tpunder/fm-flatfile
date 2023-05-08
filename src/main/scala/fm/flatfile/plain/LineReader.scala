@@ -27,8 +27,10 @@ final class LineReader(reader: Reader) extends LazySeq[JavaStringBuilder] {
     
     val buf: Array[Char] = new Array(BufferSize)
     var bufSize: Int = -1
-        
-    do {
+
+    // Note: This was a do...while() loop which is not compatible with Scala 3. This is the re-write documented here:
+    // https://docs.scala-lang.org/scala3/guides/migration/incompat-dropped-features.html#do-while-construct
+    while ({ {
       bufSize = reader.read(buf)
       
       var idx: Int = 0
@@ -46,7 +48,7 @@ final class LineReader(reader: Reader) extends LazySeq[JavaStringBuilder] {
         idx += 1
       }
       
-    } while (bufSize != -1)
+    } ; bufSize != -1} ) ()
       
     // If the last line is empty, skip it
     if (sb.length > 0) f(sb)
