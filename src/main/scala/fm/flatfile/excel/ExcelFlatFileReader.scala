@@ -24,8 +24,23 @@ import java.time.{LocalDate, YearMonth}
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import scala.util.Try
 import org.apache.poi.poifs.filesystem.FileMagic
+import org.apache.poi.util.IOUtils
 
 object ExcelFlatFileReader extends ExcelFlatFileReader {
+  /*
+    InputStreamResource Exception, working on: XXXXXXXXX.xlsx, exception: Tried to allocate an array of length 372,755,090, but the maximum length for this record type is 100,000,000.
+    If the file is not corrupt and not large, please open an issue on bugzilla to request
+    increasing the maximum allowable size for this record type.
+    You can set a higher override value with IOUtils.setByteArrayMaxOverride()
+    org.apache.poi.util.RecordFormatException: Tried to allocate an array of length 199,271,252, but the maximum length for this record type is 100,000,000.
+    If the file is not corrupt and not large, please open an issue on bugzilla to request
+    increasing the maximum allowable size for this record type.
+    You can set a higher override value with IOUtils.setByteArrayMaxOverride()
+      at org.apache.poi.util.IOUtils.throwRFE(IOUtils.java:599)
+      at org.apache.poi.util.IOUtils.checkLength(IOUtils.java:276)
+    */
+  IOUtils.setByteArrayMaxOverride(1000000000)
+
   // java.lang.String doesn't trim "no break space" - 160
   def nbspTrim(s: String): String = {
     s.replace(160.toChar, ' ').trim
